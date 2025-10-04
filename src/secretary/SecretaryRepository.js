@@ -6,6 +6,10 @@ class SecretaryRepository {
     return secretary;
   }
 
+  async findByUserName(username) {
+    return await SecretaryModel.findOne({ where: { username } });
+  }
+
   async delete(id) {
     const secretary = await SecretaryModel.findByPk(id);
     if (!secretary) throw new Error("Usuário não encontrado");
