@@ -6,7 +6,7 @@ import sequelize from "./database/database.js";
 import appConfig from "./config/app.js";
 import logger from "./shared/logger.js  ";
 import authRouter from "./routes/authRouter.js";
-import secretaryRouter from "./routes/secretaryRouter.js";
+import adminRouter from "./routes/adminRouter.js";
 
 dotenv.config();
 
@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const API_PREFIX = '/api/v1';
 app.use(API_PREFIX, authRouter)
-app.use(API_PREFIX, secretaryRouter);
+app.use(API_PREFIX, adminRouter);
 
 app.get("/", (req, res) => {
   res.send("API is running...");

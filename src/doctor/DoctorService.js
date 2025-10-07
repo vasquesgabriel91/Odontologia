@@ -1,10 +1,10 @@
-import SecretaryRepository from "./SecretaryRepository.js";
+import UserRepository from "../user/UserRepository.js";
 import validatePassword from "../helpers/passwordValidator.js";
 import bcrypt from "bcryptjs";
 
-class SecretaryService {
+class DoctorService {
   async validateUserNameUnique(username) {
-    const existingUser = await SecretaryRepository.findByUserName(username);
+    const existingUser = await UserRepository.findByUserName(username);
     if (existingUser) throw new Error("Nome de usuário já está em uso");
   }
 
@@ -16,25 +16,26 @@ class SecretaryService {
     return await bcrypt.hash(password, 10);
   }
 
-  async createSecretary(userData) {
+  async createDoctor(userData) {
     const { username, password } = userData;
-    const role = "secretary";
+    const role = "Doctor";
     await this.validateUserNameUnique(username);
     await this.isPasswordStrong(password);
 
     const hashedPassword = await this.hashPassword(password);
     const newUserData = { ...userData, role, password: hashedPassword };
-    const execute = await SecretaryRepository.create(newUserData);
+    const execute = await UserRepository.create(newUserData);
 
     const output = {
-      message: "Secretária criada com sucesso",
+      message: "Doutor criado com sucesso",
       id: execute.id,
       username: execute.username,
       role: execute.role,
+      
     };
 
     return output;
   }
 }
 
-export default new SecretaryService();
+export default new DoctorService();

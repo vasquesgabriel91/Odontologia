@@ -6,7 +6,7 @@ class SecretaryUseCase {
       const result = await SecretaryService.createSecretary(userData);
       return result;
     } catch (error) {
-      throw new Error(`Erro ao criar usuario:, ${error.message}`);
+      throw new Error(`Erro: ${error.message}`);
     }
   }
 }
