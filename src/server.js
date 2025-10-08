@@ -7,6 +7,7 @@ import appConfig from "./config/app.js";
 import logger from "./shared/logger.js  ";
 import authRouter from "./routes/authRouter.js";
 import adminRouter from "./routes/adminRouter.js";
+import secretaryRouter from "./routes/secretaryRouter.js";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 const API_PREFIX = '/api/v1';
 app.use(API_PREFIX, authRouter)
 app.use(API_PREFIX, adminRouter);
+app.use(API_PREFIX, secretaryRouter);
 
 app.get("/", (req, res) => {
   res.send("API is running...");
