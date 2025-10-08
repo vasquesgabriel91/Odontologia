@@ -16,6 +16,13 @@ class ClientService {
     const existingUser = await UserRepository.findByTelephone(telephone);
     if (existingUser) throw new Error("Número de celular já está em uso");
   }
+  async validateCellphoneUnique(telephone) {
+    if (!validateFields.validateCellphone(telephone))
+      throw new Error("Telefone inválido");
+  }
+  async validateForEmail(email) {
+    validateFields.validateEmail(email);
+  }
 
   async isPasswordStrong(password) {
     validatePassword(password);
@@ -32,12 +39,8 @@ class ClientService {
     await this.isPasswordStrong(password);
     await this.validateEmailUnique(email);
     await this.validateTelephoneUnique(telephone);
-    
-    validateFields.validateEmail(email);
-
-    if (!validateFields.validateCellphone(telephone)) {
-      throw new Error("Telefone inválido");
-    }
+    await this.validateCellphoneUnique(telephone);
+    await this.validateForEmail(email);
 
     const hashedPassword = await this.hashPassword(password);
     const newUserData = {
