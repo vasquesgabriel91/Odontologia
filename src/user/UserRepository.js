@@ -1,5 +1,5 @@
 import UserModel from "./UserModel.js";
-
+import { Op } from "sequelize";
 class UsersRepository {
   async create(userData) {
     const secretary = await UserModel.create(userData);
@@ -9,7 +9,14 @@ class UsersRepository {
   async findByUserName(username) {
     return await UserModel.findOne({ where: { username } });
   }
-
+  async findByUserNameOrEmail(usernameOrEmail) {
+    const user = await UserModel.findOne({
+      where: {
+        [Op.or]: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
+      },
+    });
+    return user;
+  }
   async findByTelephone(telephone) {
     return await UserModel.findOne({ where: { telephone } });
   }

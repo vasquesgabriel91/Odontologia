@@ -22,7 +22,7 @@ class AuthService {
   }
 
   async login(username, password) {
-    const user = await UserRepository.findByUserName(username);
+    const user = await UserRepository.findByUserNameOrEmail(username);
     if (!user) throw new Error("Usuário não encontrado");
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
