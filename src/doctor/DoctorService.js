@@ -18,7 +18,7 @@ class DoctorService {
 
   async createDoctor(userData) {
     const { username, password } = userData;
-    const role = "Doctor";
+    const role = "doctor";
     await this.validateUserNameUnique(username);
     await this.isPasswordStrong(password);
 

@@ -1,10 +1,10 @@
-import SecretaryRepository from "./SecretaryRepository.js";
+import UserRepository from "../user/UserRepository.js";
 import validatePassword from "../helpers/passwordValidator.js";
 import bcrypt from "bcryptjs";
 
 class SecretaryService {
   async validateUserNameUnique(username) {
-    const existingUser = await SecretaryRepository.findByUserName(username);
+    const existingUser = await UserRepository.findByUserName(username);
     if (existingUser) throw new Error("Nome de usuário já está em uso");
   }
 
@@ -24,7 +24,7 @@ class SecretaryService {
 
     const hashedPassword = await this.hashPassword(password);
     const newUserData = { ...userData, role, password: hashedPassword };
-    const execute = await SecretaryRepository.create(newUserData);
+    const execute = await UserRepository.create(newUserData);
 
     const output = {
       message: "Secretária criada com sucesso",
