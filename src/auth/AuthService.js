@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import SecretaryRepository from "../secretary/SecretaryRepository.js";
+import UserRepository from "../user/UserRepository.js";
 import config from "../config/app.js";
 
 class AuthService {
@@ -22,7 +22,7 @@ class AuthService {
   }
 
   async login(username, password) {
-    const user = await SecretaryRepository.findByUserName(username);
+    const user = await UserRepository.findByUserName(username);
     if (!user) throw new Error("Usuário não encontrado");
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
