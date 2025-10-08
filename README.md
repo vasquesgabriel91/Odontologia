@@ -41,6 +41,14 @@ confira o nome do container com o comando:
 
 docker ps
 
-ou 
+dentro do banco rode 
+\dt
+para mostrar todas as tabelas do banco.
 
-docker ls
+se quiser conferir todas as coluna e especificações de alguma tabela especifica faça 
+
+\d users
+
+para rodas comando basta usar sql 
+
+SELECT * FROM users;
