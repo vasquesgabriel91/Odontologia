@@ -32,24 +32,27 @@ class ClientService {
     await this.isPasswordStrong(password);
     await this.validateEmailUnique(email);
     await this.validateTelephoneUnique(telephone);
-    const validateEmail = validateFields.validateEmail(email);
-    const validateCellphone = validateFields.validateCellphone(telephone);
+    
+    validateFields.validateEmail(email);
+
+    if (!validateFields.validateCellphone(telephone)) {
+      throw new Error("Telefone inválido");
+    }
 
     const hashedPassword = await this.hashPassword(password);
     const newUserData = {
       ...userData,
       role,
-      email: validateEmail,
-      telephone: validateCellphone,
       password: hashedPassword,
     };
     const execute = await UserRepository.create(newUserData);
 
     const output = {
-      message: "Doutor criado com sucesso",
+      message: "Paciente criado com sucesso",
       id: execute.id,
       username: execute.username,
-      role: execute.role,
+      email: execute.email,
+      telephone: execute.telephone,
     };
 
     return output;

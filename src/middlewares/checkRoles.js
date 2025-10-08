@@ -12,7 +12,7 @@ function checkRoles(allowedRoles = []) {
       if (!allowedRoles.includes(userRole)) {
         return res
           .status(403)
-          .json({ message: "Acesso negado: permissão insuficiente." });
+          .json({ message: "Acesso negado: você não tem permissão o insuficiente." });
       }
 
       next(); 

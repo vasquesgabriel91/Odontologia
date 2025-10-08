@@ -9,7 +9,7 @@ class AuthService {
     this.expiresIn = config.jwt.expiresIn;
   }
   generateToken(user) {
-    const payload = { id: user.id, username: user.username };
+    const payload = { id: user.id, role:user.role, username: user.username };
     return jwt.sign(payload, this.secret, { expiresIn: this.expiresIn });
   }
 
@@ -28,9 +28,9 @@ class AuthService {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) throw new Error("Senha inválida");
 
-    const token = this.generateToken({ id: user.id, username: user.username });
+    const token = this.generateToken({ id: user.id, role:user.role, username: user.username });
 
-    return { token, user: { id: user.id, username: user.username } };
+    return { token, user: { id: user.id, role:user.role, username: user.username } };
   }
 }
 
