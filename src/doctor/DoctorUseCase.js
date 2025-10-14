@@ -9,5 +9,6 @@ class DoctorUseCase {
       throw new Error(`Erro: ${error.message}`);
     }
   }
+ 
 }
 export default new DoctorUseCase();

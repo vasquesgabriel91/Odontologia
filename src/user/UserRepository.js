@@ -5,7 +5,12 @@ class UsersRepository {
     const secretary = await UserModel.create(userData);
     return secretary;
   }
-
+  async findById(id) {
+    const getUser = await UserModel.findByPk(id, {
+      attributes: { exclude: ["password", "createdAt", "updatedAt"] },
+    });
+    return getUser;
+  }
   async findByUserName(username) {
     return await UserModel.findOne({ where: { username } });
   }
@@ -30,6 +35,13 @@ class UsersRepository {
     if (!secretary) throw new Error("Usuário não encontrado");
     await secretary.destroy();
     return secretary;
+  }
+
+  async findAll() {
+    const allUsers = await UserModel.findAll({
+      attributes: { exclude: ["password", "createdAt", "updatedAt"] },
+    });
+    return allUsers;
   }
 }
 export default new UsersRepository();

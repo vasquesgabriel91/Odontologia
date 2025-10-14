@@ -7,9 +7,9 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 import checkRoles from "../middlewares/checkRoles.js";
 const router = express.Router();
 
-router.post("/admin", authMiddleware, checkRoles(["admin"]),validateFields(["username", "password"]), AdminController.createAdmin);
+router.post("/admin",authMiddleware, checkRoles(["admin"]),validateFields(["username", "password"]), AdminController.createAdmin);
 router.post( "/secretary",authMiddleware, checkRoles(["admin"]), validateFields(["username", "password"]), SecretaryController.createSecretary);
 router.post( "/doctor", authMiddleware, checkRoles(["admin"]), validateFields(["username", "password","cro"]), DoctorController.createDoctor);
-
-
+router.delete( "/user/destroy/:id", authMiddleware, checkRoles(["admin"]), AdminController.deleteUser);
+router.get ( "/users/getAll", authMiddleware, checkRoles(["admin"]), AdminController.listUsers);
 export default router;

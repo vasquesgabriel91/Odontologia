@@ -31,7 +31,6 @@ class DoctorService {
       id: execute.id,
       username: execute.username,
       role: execute.role,
-      
     };
 
     return output;

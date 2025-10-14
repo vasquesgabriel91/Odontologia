@@ -1,6 +1,8 @@
 import UserRepository from "../user/UserRepository.js";
 import validatePassword from "../helpers/passwordValidator.js";
 import bcrypt from "bcryptjs";
+const API_PREFIX = process.env.API_PREFIX;
+const baseUrl = process.env.BASE_URL;
 
 class AdminService {
   async validateUserNameUnique(username) {
@@ -34,6 +36,31 @@ class AdminService {
     };
 
     return output;
+  }
+  async deleteDoctor(idParam) {
+    try {
+      const deleteUser = await UserRepository.delete(idParam);
+      return "Usúario deletado com sucesso";
+    } catch (error) {
+      throw new Error("Erro ao deletar o doutor: " + error.message);
+    }
+  }
+  async listUsers() {
+    try {
+      const users = await UserRepository.findAll();
+
+      const output = users.map((user) => ({
+        ...user.dataValues, 
+        links: {
+          update: `${baseUrl}${API_PREFIX}/user/update/${user.id}`,
+          delete: `${baseUrl}${API_PREFIX}/user/destroy/${user.id}`,
+        },
+      }));
+
+      return output;
+    } catch (error) {
+      throw new Error("Erro ao listar os usuários: " + error.message);
+    }
   }
 }
 
