@@ -7,7 +7,8 @@ import checkRoles from "../middlewares/checkRoles.js";
 
 const router = express.Router();
 
-router.post( "/client",authMiddleware, checkRoles(["secretary"]), validateFields(["username","telephone", "email","password"]), ClientController.createClient );
+router.post( "/client",authMiddleware, checkRoles(["secretary"]), validateFields(["username","telephone", "email", "password"]), ClientController.createClient );
 router.get( "/schedules",authMiddleware, checkRoles(["secretary"]), AppointmentsController.listSchedules );
+router.post( "/appointments/:id",authMiddleware, checkRoles(["secretary"]), AppointmentsController.createAppointments );
 
 export default router;

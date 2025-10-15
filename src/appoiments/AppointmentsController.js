@@ -1,13 +1,29 @@
 import AppointmentsUseCase from "./AppointmentsUseCase.js";
 
-class AppointmentsController{
-     async listSchedules (req, res){
+class AppointmentsController {
+  async listSchedules(req, res) {
     try {
       const getSchedules = await AppointmentsUseCase.getAllSchedules();
-       res.status(200).json(getSchedules);
+      res.status(200).json(getSchedules);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+  async createAppointments(req, res) {
+    try {
+      const scheduleId = req.params.id;
+      const secretaryId = req.user.id;
+      const  { email, startTime, endTime, status } = req.body;
+
+      const createAppointments = await AppointmentsUseCase.createAppointments(
+        scheduleId,
+        secretaryId,
+        { email, startTime, endTime, status }
+      );
+      res.status(200).json(createAppointments);
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
   }
 }
-export default new AppointmentsController;
+export default new AppointmentsController();

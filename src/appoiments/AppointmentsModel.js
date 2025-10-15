@@ -32,6 +32,14 @@ AppointmentModel.init(
       type: DataTypes.STRING(20),
       allowNull: false,
     },
+    startTime: {
+      type: DataTypes.STRING(10), 
+      allowNull: false,
+    },
+    endTime: {
+      type: DataTypes.STRING(10), 
+      allowNull: false,
+    },
     status: {
       type: DataTypes.ENUM("agendado", "concluído", "cancelado"),
       defaultValue: "agendado",

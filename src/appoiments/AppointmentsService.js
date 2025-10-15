@@ -1,16 +1,18 @@
 import AppointmentsRepository from "./AppointmentsRepository.js";
+import UserRepository from "../user/UserRepository.js";
+
 const API_PREFIX = process.env.API_PREFIX;
 const baseUrl = process.env.BASE_URL;
 
 class AppointmentsService {
   async listSchedules() {
-   try {
+    try {
       const users = await AppointmentsRepository.getSchedulesAvailable();
 
       const output = users.map((user) => ({
-        ...user.dataValues, 
+        ...user.dataValues,
         links: {
-          update: `${baseUrl}${API_PREFIX}/appointments/create/${user.id}`,
+          create: `${baseUrl}${API_PREFIX}/appointments/${user.id}`,
         },
       }));
 
@@ -18,7 +20,48 @@ class AppointmentsService {
     } catch (error) {
       throw new Error("Erro ao listar os usuários: " + error.message);
     }
+  } 
+  async createAppointments(scheduleId, secretaryId, appointmentData) {
+    try {
+      const { email, startTime, endTime, status } = appointmentData;
 
+      const getByEmail = await UserRepository.findByUserNameOrEmail(email);
+
+      const patientId = getByEmail.id;
+
+      const getScheduleById = await AppointmentsRepository.getScheduleById(
+        scheduleId
+      );
+
+      const doctorId = getScheduleById.doctorId;
+
+      const date = getScheduleById.dayOfWeek;
+
+      const scheduleStartTime = getScheduleById.startTime;
+
+      const scheduleEndTime = getScheduleById.endTime;
+
+      if (startTime < scheduleStartTime || endTime > scheduleEndTime) {
+        throw new Error(
+          `Consulta fora do horário da agenda. Disponível: ${scheduleStartTime} - ${scheduleEndTime}`
+        );
+      }
+
+      const createAppointments =
+        await AppointmentsRepository.createAppointments(
+          startTime,
+          endTime,
+          status,
+          scheduleId,
+          patientId,
+          doctorId,
+          secretaryId,
+          date
+        );
+      return createAppointments;
+    } catch (error) {
+      throw new Error("Erro ao criar consulta: " + error.message);
+    }
   }
 }
-export default new AppointmentsService
+export default new AppointmentsService();
