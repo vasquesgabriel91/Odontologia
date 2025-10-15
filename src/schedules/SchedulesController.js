@@ -17,7 +17,6 @@ class SchedulesController {
   async getMySchedules(req, res) {
     try {
       const idUser = req.user.id;
-      console.log(idUser);
       const users = await SchedulesUseCase.getMySchedules(idUser);
       res.status(200).json(users);
     } catch (error) {
