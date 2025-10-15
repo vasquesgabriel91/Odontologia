@@ -19,6 +19,11 @@ SchedulesModel.init(
       type: DataTypes.STRING(10),
       allowNull: false,
     },
+    dateOfWeek: {
+      type: DataTypes.STRING(10),
+      allowNull: true,
+    },
+
     startTime: {
       type: DataTypes.TIME,
       allowNull: false,
