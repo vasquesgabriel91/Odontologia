@@ -9,7 +9,7 @@ class AppointmentsRepository {
         {
           model: AppointmentModel,
           as: "appointments",
-          required: false, // LEFT JOIN
+          required: false, 
           where: {
             status: {
               [Op.in]: ["agendado", "concluído", "cancelado"],

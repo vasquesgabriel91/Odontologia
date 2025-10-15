@@ -5,9 +5,21 @@ class SchedulesController {
     try {
       const schedulesData = req.body;
       const idUser = req.user.id;
-      console.log(idUser);
-      const newSchedules = await SchedulesUseCase.execute(schedulesData, idUser);
+      const newSchedules = await SchedulesUseCase.execute(
+        schedulesData,
+        idUser
+      );
       res.status(201).json(newSchedules);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+  async getMySchedules(req, res) {
+    try {
+      const idUser = req.user.id;
+      console.log(idUser);
+      const users = await SchedulesUseCase.getMySchedules(idUser);
+      res.status(200).json(users);
     } catch (error) {
       res.status(400).json({ error: error.message });
     }

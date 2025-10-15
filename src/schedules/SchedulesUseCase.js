@@ -9,6 +9,14 @@ class SchedulesUseCase {
       throw new Error(`Erro: ${error.message}`);
     }
   }
+  async getMySchedules(idUser) {
+    try {
+      const users = await SchedulesService.getMySchedules(idUser);
+      return users;
+    } catch (error) {
+      throw new Error(`Erro: ${error.message}`);
+    }
+  }
 }
 
 export default new SchedulesUseCase();
