@@ -13,7 +13,17 @@ class DoctorController {
       res.status(400).json({ error: error.message });
     }
   }
- 
+
+  async doctorSchedule(req, res) {
+    const userData = req.body;
+    const { id } = req.params;
+    try {
+      const createSchedule = await DoctorUseCase.schedule(userData, id);
+      res.status(201).json({ message: createSchedule });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
 }
 
 export default new DoctorController();

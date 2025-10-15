@@ -6,9 +6,17 @@ class DoctorUseCase {
       const result = await DoctorService.createDoctor(userData);
       return result;
     } catch (error) {
-      throw new Error(`Erro: ${error.message}`);
+      throw new Error(`Error: ${error.message}`);
     }
   }
- 
+
+  async schedule(userData, id) {
+    try {
+      const result = await DoctorService.doctorSchedule(userData, id);
+      return result;
+    } catch (error) {
+      throw new Error(`Error: ${error.message}`);
+    }
+  }
 }
 export default new DoctorUseCase();

@@ -8,6 +8,7 @@
   import authRouter from "./routes/authRouter.js";
   import adminRouter from "./routes/adminRouter.js";
   import secretaryRouter from "./routes/secretaryRouter.js";
+  import doctorRouter from "./routes/doctorRouter.js";
 
   dotenv.config();
   const API_PREFIX = process.env.API_PREFIX;
@@ -21,7 +22,7 @@
   app.use(API_PREFIX, authRouter)
   app.use(API_PREFIX, adminRouter);
   app.use(API_PREFIX, secretaryRouter);
-
+  app.use(API_PREFIX, doctorRouter);
   app.get("/", (req, res) => {
     res.send("API is running...");
   });
