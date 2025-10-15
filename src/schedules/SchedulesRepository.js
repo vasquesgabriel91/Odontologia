@@ -1,5 +1,4 @@
 import SchedulesModel from "./SchedulesModel.js";
-import { Op } from "sequelize";
 
 class SchedulesRepository {
     async create (finalData){

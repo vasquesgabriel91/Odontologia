@@ -9,5 +9,6 @@ class ClientUseCase {
       throw new Error(`Erro: ${error.message}`);
     }
   }
+
 }
 export default new ClientUseCase();
