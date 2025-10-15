@@ -44,6 +44,10 @@ AppointmentModel.init(
       type: DataTypes.ENUM("agendado", "concluído", "cancelado"),
       defaultValue: "agendado",
     },
+    descricao: {
+      type: DataTypes.STRING(30), 
+      allowNull: true,
+    },
   },
   {
     sequelize,

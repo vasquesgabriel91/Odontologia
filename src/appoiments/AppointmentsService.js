@@ -23,7 +23,7 @@ class AppointmentsService {
   } 
   async createAppointments(scheduleId, secretaryId, appointmentData) {
     try {
-      const { email, startTime, endTime, status } = appointmentData;
+      const { email, startTime, endTime, status, descricao } = appointmentData;
 
       const getByEmail = await UserRepository.findByUserNameOrEmail(email);
 
@@ -52,6 +52,7 @@ class AppointmentsService {
           startTime,
           endTime,
           status,
+          descricao,
           scheduleId,
           patientId,
           doctorId,

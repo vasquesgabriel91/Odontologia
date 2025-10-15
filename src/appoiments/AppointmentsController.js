@@ -13,12 +13,12 @@ class AppointmentsController {
     try {
       const scheduleId = req.params.id;
       const secretaryId = req.user.id;
-      const  { email, startTime, endTime, status } = req.body;
+      const  { email, startTime, endTime, status, descricao } = req.body;
 
       const createAppointments = await AppointmentsUseCase.createAppointments(
         scheduleId,
         secretaryId,
-        { email, startTime, endTime, status }
+        { email, startTime, endTime, status, descricao }
       );
       res.status(200).json(createAppointments);
     } catch (error) {
