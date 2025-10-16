@@ -21,6 +21,14 @@ class AppointmentsUseCase {
       throw new Error(`Error: ${error.message}`);
     }
   }
+  async getAppointmentsByDoctor(doctorId) {
+        try {
+            const appointments = await AppointmentsService.listAppointmentsByDoctor(doctorId);
+            return appointments;
+        } catch (error) {
+            throw new Error(`Erro: ${error.message}`);
+        }
+    }
 }
 
 export default new AppointmentsUseCase();

@@ -25,5 +25,14 @@ class AppointmentsController {
       res.status(400).json({ error: error.message });
     }
   }
+  async listDoctorAppointments(req, res) {
+        try {
+            const doctorId = req.user.id;
+            const appointments = await AppointmentsUseCase.getAppointmentsByDoctor(doctorId);
+            res.status(200).json(appointments);
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    }
 }
 export default new AppointmentsController();

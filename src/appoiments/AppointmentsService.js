@@ -64,5 +64,13 @@ class AppointmentsService {
       throw new Error("Erro ao criar consulta: " + error.message);
     }
   }
+  async listAppointmentsByDoctor(doctorId) {
+        try {
+            const appointments = await AppointmentsRepository.findByDoctorId(doctorId);
+            return appointments;
+        } catch (error) {
+            throw new Error("Erro ao listar agendamentos do doutor: " + error.message);
+        }
+    }
 }
 export default new AppointmentsService();
