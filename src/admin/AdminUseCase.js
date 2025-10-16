@@ -29,5 +29,20 @@ class AdminUseCase {
       throw new Error(`Erro: ${error.message}`);
     }
   }
+  async update(idParam, loggedUserId, userData) {
+    try {
+      if (idParam == loggedUserId) {
+        throw new Error("Você não pode alterar seu próprio usuário.");
+      }
+
+      if (userData.role) {
+        delete userData.role;
+      }
+      const result = await AdminService.updateUser(idParam, userData);
+      return result;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
 }
 export default new AdminUseCase();

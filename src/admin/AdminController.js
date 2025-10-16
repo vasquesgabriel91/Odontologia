@@ -32,6 +32,24 @@ class AdminController {
       res.status(400).json({ error: error.message });
     }
   }
+  async updateUser(req, res) {
+    const idParam = req.params.id;
+    const loggedUserId = req.user.id;
+    const userData = req.body;
+
+    try {
+      const updateUser = await AdminUseCase.update(
+        idParam,
+        loggedUserId,
+        userData
+      );
+      res
+        .status(200)
+        .json({ message: "Usuário atualizado com sucesso ", user: updateUser });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
 }
 
 export default new AdminController();

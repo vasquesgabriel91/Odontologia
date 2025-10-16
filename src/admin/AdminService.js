@@ -50,7 +50,7 @@ class AdminService {
       const users = await UserRepository.findAll();
 
       const output = users.map((user) => ({
-        ...user.dataValues, 
+        ...user.dataValues,
         links: {
           update: `${baseUrl}${API_PREFIX}/user/update/${user.id}`,
           delete: `${baseUrl}${API_PREFIX}/user/destroy/${user.id}`,
@@ -60,6 +60,17 @@ class AdminService {
       return output;
     } catch (error) {
       throw new Error("Erro ao listar os usuários: " + error.message);
+    }
+  }
+  async updateUser(idParam, userData) {
+    try {
+      const user = await UserRepository.findById(idParam);
+      if (!user) throw new Error("Usuário não encontrado");
+
+      const updatedUser = await UserRepository.update(idParam, userData);
+      return updatedUser;
+    } catch (error) {
+      throw new Error("Erro ao atualizar o usuário: " + error.message);
     }
   }
 }

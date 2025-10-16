@@ -43,5 +43,10 @@ class UsersRepository {
     });
     return allUsers;
   }
+
+  async update(id, userData) {
+    await UserModel.update(userData, { where: { id } });
+    return await UserModel.findByPk(id);
+  }
 }
 export default new UsersRepository();

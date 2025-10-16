@@ -11,5 +11,6 @@ router.post("/admin",authMiddleware, checkRoles(["admin"]),validateFields(["user
 router.post( "/secretary",authMiddleware, checkRoles(["admin"]), validateFields(["username", "password"]), SecretaryController.createSecretary);
 router.post( "/doctor", authMiddleware, checkRoles(["admin"]), validateFields(["username", "password","cro"]), DoctorController.createDoctor);
 router.delete( "/user/destroy/:id", authMiddleware, checkRoles(["admin"]), AdminController.deleteUser);
+router.put( "/user/update/:id", authMiddleware, checkRoles(["admin"]), AdminController.updateUser);
 router.get ( "/users/getAll", authMiddleware, checkRoles(["admin"]), AdminController.listUsers);
 export default router;
