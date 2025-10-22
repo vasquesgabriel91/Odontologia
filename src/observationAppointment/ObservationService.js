@@ -10,7 +10,7 @@ class ObservationService {
       return observation;
     } catch (error) {
       throw new Error(
-        "Error creating observation appointment: " + error.message
+        "Error ao criar prontuário: " + error.message
       );
     }
   }
