@@ -11,7 +11,7 @@ router.post( "/client",authMiddleware, checkRoles(["secretary"]), validateFields
 router.get( "/schedules",authMiddleware, checkRoles(["secretary"]), AppointmentsController.listSchedules );
 router.post( "/appointments/:id",authMiddleware, checkRoles(["secretary"]), AppointmentsController.createAppointments );
 router.get( "/allAppointments",authMiddleware, checkRoles(["secretary"]), AppointmentsController.listAppointments );
-router.post( "/appointments/update/:id",authMiddleware, checkRoles(["secretary"]), AppointmentsController.updateAppointment );
+router.put( "/appointments/update/:id",authMiddleware, checkRoles(["secretary"]), AppointmentsController.updateAppointment );
 
 
 

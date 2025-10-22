@@ -76,22 +76,46 @@ class AppointmentsRepository {
     const schedule = await SchedulesModel.findByPk(id);
     return schedule;
   }
-
+  async getAppointmentById(id) {
+    const appointment = await AppointmentModel.findByPk(id);
+    return appointment;
+  }
   async getAllAppointmentsDetailed(dateFormate) {
-
-      const appointments = await AppointmentModel.findAll({
-        where: {
-          date: {
-            [Op.gte]: dateFormate, 
+    const appointments = await AppointmentModel.findAll({
+      include: [
+        { model: User, as: "doctor" },
+        { model: User, as: "patient" },
+        {
+          model: SchedulesModel,
+          as: "schedule",
+          required: true, 
+          where: {
+            dateOfWeek: {
+              [Op.gte]: dateFormate,
+            },
           },
         },
-        include: [
-          { model: User, as: "doctor" },
-          { model: User, as: "patient" },
-          { model: SchedulesModel, as: "schedule" },
-        ],
-      });
-      return appointments.map((app) => app.toJSON());
+      ],
+    });
+
+    return appointments.map((app) => app.toJSON());
+  }
+  async updateDateOfWeek(scheduleId, dateOfWeek, date) {
+    const appointment = await AppointmentModel.update(
+      { dateOfWeek, date },
+      { where: { scheduleId: scheduleId } }
+    );
+    return appointment;
+  }
+  async updateAppointment(appointmentId, date, startTime, endTime, status) {
+    const appointment = await AppointmentModel.update(
+      { date, startTime, endTime, status },
+      { where: { id: appointmentId } }
+    );
+
+    const getAppointmentById = await this.getAppointmentById(appointmentId);
+
+    return getAppointmentById;
   }
 }
 export default new AppointmentsRepository();

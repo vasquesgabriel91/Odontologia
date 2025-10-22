@@ -127,6 +127,7 @@ class AppointmentsService {
       const day = today.getDate().toString().padStart(2, "0");
       const dateFormate = `${year}-${month}-${day}`;
 
+      console.log("Date Formate:", dateFormate);
       const appointments =
         await AppointmentsRepository.getAllAppointmentsDetailed(dateFormate);
 
@@ -146,14 +147,12 @@ class AppointmentsService {
   async updateAppointment(appointmentId, userData) {
     const { date, dateOfWeek, startTime, endTime, status } = userData;
     try {
-      const updateDateOfWeek = await AppointmentsRepository.updateDateOfWeek(
-        appointmentId,
-        dateOfWeek
-      );
-      const updateAppointment = await AppointmentsRepository.updateAppointment(
-        appointmentId,
-        userData
-      );
+      const getAppointmentById = await AppointmentsRepository.getAppointmentById(appointmentId);
+      const scheduleId = getAppointmentById.scheduleId;
+
+      const updateDateOfWeek = await AppointmentsRepository.updateDateOfWeek(scheduleId, dateOfWeek, date);
+
+      const updateAppointment = await AppointmentsRepository.updateAppointment(appointmentId, date, startTime, endTime, status);
       return updateAppointment;
     } catch (error) {
       throw new Error("Erro ao atualizar consulta: " + error.message);
