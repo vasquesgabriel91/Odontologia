@@ -17,6 +17,14 @@ class ClientUseCase {
       throw new Error(error.message);
     }   
   }
-
+  async updateAppointment(appointmentId) {
+    try {
+      const status = "cancelado";
+      const updateAppointment = await ClientService.updateAppointmentClient(appointmentId, status);
+      return updateAppointment;
+    } catch (error) {
+      throw new Error(error.message);
+    } 
+  }
 }
 export default new ClientUseCase();

@@ -17,7 +17,7 @@ class UsersRepository {
     return await UserModel.findOne({ where: { username } });
   }
   async findByUserNameOrEmail(usernameOrEmail) {
-     const user = await UserModel.findOne({
+    const user = await UserModel.findOne({
       where: {
         [Op.or]: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
       },
@@ -56,6 +56,17 @@ class UsersRepository {
     });
     return appointments;
   }
-    
+  async updateAppointmentStatusById(appointmentId, status) {
+    const appointment = await AppointmentModel.findByPk(appointmentId);
+    if (!appointment) {
+      throw new Error("Agendamento não encontrado");
+    }
+    const updatedAppointment = await AppointmentModel.update(
+      { status },
+      { where: { id: appointmentId } }
+    );
+
+    return appointment;
+  }
 }
 export default new UsersRepository();

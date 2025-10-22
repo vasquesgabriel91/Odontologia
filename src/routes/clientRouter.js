@@ -5,5 +5,6 @@ import clientController from "../client/ClientController.js";
 const router = express.Router();
 
 router.get ( "/getAllMyAppointmentPatient", authMiddleware, checkRoles(["client","secretary"]), clientController.myAppointmentPatient);
+router.put ( "/myAppointment/Cancel/:id", authMiddleware, checkRoles(["client","secretary"]), clientController.myAppointmentPatientCancel);
 
 export default router;

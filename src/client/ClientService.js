@@ -63,16 +63,31 @@ class ClientService {
     return output;
   }
   async listMyAppointmentsClient(clientId) {
-    const appointments = await UserRepository.getAppointmentsByClientId(
-      clientId
-    );
-    const output = appointments.map((appointment) => ({
-      appointment,
-      link: {
-        create: `${baseUrl}${API_PREFIX}/myAppointment/Cancel/${appointment.id}`,
-      },
-    }));
-    return output;
+    try {
+      const appointments = await UserRepository.getAppointmentsByClientId(
+        clientId
+      );
+      const output = appointments.map((appointment) => ({
+        appointment,
+        link: {
+          create: `${baseUrl}${API_PREFIX}/myAppointment/Cancel/${appointment.id}`,
+        },
+      }));
+      return output;
+    } catch (error) {
+      throw new Error("Erro ao listar os agendamentos: " + error.message);
+    }
+  }
+  async updateAppointmentClient(appointmentId, status) {
+    try {
+      const appointment = await UserRepository.updateAppointmentStatusById(
+        appointmentId,
+        status
+      );
+      return appointment;
+    } catch (error) {
+      throw new Error("Erro ao atualizar o agendamento: " + error.message);
+    }
   }
 }
 
