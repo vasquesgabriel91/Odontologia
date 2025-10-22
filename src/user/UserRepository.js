@@ -15,7 +15,7 @@ class UsersRepository {
     return await UserModel.findOne({ where: { username } });
   }
   async findByUserNameOrEmail(usernameOrEmail) {
-    const user = await UserModel.findOne({
+     const user = await UserModel.findOne({
       where: {
         [Op.or]: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
       },

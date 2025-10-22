@@ -31,21 +31,37 @@ class AppointmentsRepository {
       throw new Error("Erro ao criar agendamento: " + error.message);
     }
   }
-  async getSchedulesAvailable() {
-    const schedules = await SchedulesModel.findAll({
+  async getAllSchedules() {
+    const schedules = await SchedulesModel.findAll();
+    return schedules;
+  }
+  async getAllAppointments() {
+    const appointments = await AppointmentModel.findAll({
+      attributes: ["id", "startTime", "endTime"],
       include: [
         {
-          model: AppointmentModel,
-          as: "appointments",
-          required: false,
-          where: {
-            status: {
-              [Op.in]: ["agendado", "concluído", "cancelado"],
-            },
-          },
+          model: SchedulesModel,
+          as: "schedule",
+          attributes: ["id", "startTime", "endTime"],
         },
       ],
-      where: literal(`"appointments"."id" IS NULL`),
+    });
+    return appointments.map((app) => app.toJSON());
+  }
+  async getSchedulesAvailable(schedulesComplete = []) {
+    const schedules = await SchedulesModel.findAll({
+      model: AppointmentModel,
+      as: "appointments",
+      required: false,
+      where: {
+        status: {
+          [Op.in]: ["agendado", "concluído", "cancelado"],
+        },
+      },
+
+      where: {
+        id: { [Op.notIn]: schedulesComplete },
+      },
     });
 
     return schedules;

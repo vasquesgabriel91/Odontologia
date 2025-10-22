@@ -1,15 +1,69 @@
 import AppointmentsRepository from "./AppointmentsRepository.js";
 import UserRepository from "../user/UserRepository.js";
-
+import convertTimeForNumber from "../helpers/convertTimeForNumber.js";
 const API_PREFIX = process.env.API_PREFIX;
 const baseUrl = process.env.BASE_URL;
 
 class AppointmentsService {
   async listSchedules() {
     try {
-      const users = await AppointmentsRepository.getSchedulesAvailable();
+      const appointments = await AppointmentsRepository.getAllAppointments();
 
-      const output = users.map((user) => ({
+      const schedulesData = appointments.map((app) => ({
+        scheduleId: app.schedule.id,
+        scheduleStartTime: app.schedule.startTime,
+        scheduleEndTime: app.schedule.endTime,
+        appointmentStartTime: app.startTime,
+        appointmentEndTime: app.endTime,
+      }));
+
+      const hoursBySchedule = {};
+
+      schedulesData.forEach((app) => {
+        const {
+          scheduleId,
+          scheduleStartTime,
+          scheduleEndTime,
+          appointmentStartTime,
+          appointmentEndTime,
+        } = app;
+
+        const hoursToWorkByPatient = convertTimeForNumber(
+          appointmentStartTime,
+          appointmentEndTime
+        );
+
+        if (!hoursBySchedule[scheduleId]) {
+          const hoursToWorkByDoctor = convertTimeForNumber(
+            scheduleStartTime,
+            scheduleEndTime
+          );
+
+          hoursBySchedule[scheduleId] = {
+            totalHours: 0,
+            hoursToWorkByDoctor,
+          };
+        }
+
+        const hoursToWorkByDoctor = hoursBySchedule[scheduleId].hoursToWorkByDoctor;
+
+        hoursBySchedule[scheduleId].totalHours += hoursToWorkByPatient;
+
+      });
+      
+      const schedulesComplete = [];
+      
+      for (const [scheduleId, data] of Object.entries(hoursBySchedule)) {
+        const { totalHours, hoursToWorkByDoctor } = data;
+
+        if (totalHours >= hoursToWorkByDoctor) {
+          schedulesComplete.push(scheduleId);
+        }
+      }
+
+      const getSchedulesAvailable = await AppointmentsRepository.getSchedulesAvailable( schedulesComplete );
+      
+      const output = getSchedulesAvailable.map((user) => ({
         ...user.dataValues,
         links: {
           create: `${baseUrl}${API_PREFIX}/appointments/${user.id}`,
@@ -20,7 +74,7 @@ class AppointmentsService {
     } catch (error) {
       throw new Error("Erro ao listar os usuários: " + error.message);
     }
-  } 
+  }
   async createAppointments(scheduleId, secretaryId, appointmentData) {
     try {
       const { email, startTime, endTime, status, descricao } = appointmentData;
