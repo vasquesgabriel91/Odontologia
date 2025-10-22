@@ -1,5 +1,6 @@
 import SchedulesModel from "./SchedulesModel.js";
 import AppointmentsModel from "../appointments/AppointmentsModel.js";
+import UserModel from "../user/UserModel.js";
 
 class SchedulesRepository {
   async create(finalData) {
@@ -12,9 +13,20 @@ class SchedulesRepository {
     });
     return getSchedules;
   }
-  async findAppointmentsByDoctorId(id) {
+  async findAppointmentsByDoctorId(idUser) {
     const getAppointments = await AppointmentsModel.findAll({
-      where: { doctorId: id },
+      where: { doctorId: idUser },
+      include: [
+        {
+          model: UserModel,
+          as: "patient",
+          attributes: ["id", "username", "email"],
+        },
+      ],
+      order: [
+        ["date", "ASC"],
+        ["startTime", "ASC"],
+      ],
     });
     return getAppointments.map((app) => app.toJSON());
   }
