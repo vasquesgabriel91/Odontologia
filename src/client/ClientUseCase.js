@@ -9,6 +9,14 @@ class ClientUseCase {
       throw new Error(`Erro: ${error.message}`);
     }
   }
+  async getMyAppointmentsClient(clientId) {
+    try {
+      const appointments = await ClientService.listMyAppointmentsClient(clientId);
+      return appointments;
+    } catch (error) {
+      throw new Error(error.message);
+    }   
+  }
 
 }
 export default new ClientUseCase();

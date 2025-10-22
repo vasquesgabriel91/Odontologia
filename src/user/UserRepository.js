@@ -1,5 +1,7 @@
 import UserModel from "./UserModel.js";
+import AppointmentModel from "../appointments/AppointmentsModel.js";
 import { Op } from "sequelize";
+
 class UsersRepository {
   async create(userData) {
     const secretary = await UserModel.create(userData);
@@ -48,5 +50,12 @@ class UsersRepository {
     await UserModel.update(userData, { where: { id } });
     return await UserModel.findByPk(id);
   }
+  async getAppointmentsByClientId(clientId) {
+    const appointments = await AppointmentModel.findAll({
+      where: { patientId: clientId },
+    });
+    return appointments;
+  }
+    
 }
 export default new UsersRepository();

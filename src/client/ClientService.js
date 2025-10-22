@@ -2,6 +2,8 @@ import UserRepository from "../user/UserRepository.js";
 import validatePassword from "../helpers/passwordValidator.js";
 import validateFields from "../helpers/validateField.js";
 import bcrypt from "bcryptjs";
+const API_PREFIX = process.env.API_PREFIX;
+const baseUrl = process.env.BASE_URL;
 
 class ClientService {
   async validateUserNameUnique(username) {
@@ -34,7 +36,7 @@ class ClientService {
 
   async createClient(userData) {
     const { username, password, email, telephone } = userData;
-    const role = "Client";
+    const role = "client";
     await this.validateUserNameUnique(username);
     await this.isPasswordStrong(password);
     await this.validateEmailUnique(email);
@@ -58,6 +60,18 @@ class ClientService {
       telephone: execute.telephone,
     };
 
+    return output;
+  }
+  async listMyAppointmentsClient(clientId) {
+    const appointments = await UserRepository.getAppointmentsByClientId(
+      clientId
+    );
+    const output = appointments.map((appointment) => ({
+      appointment,
+      link: {
+        create: `${baseUrl}${API_PREFIX}/myAppointment/Cancel/${appointment.id}`,
+      },
+    }));
     return output;
   }
 }
