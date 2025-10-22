@@ -10,5 +10,9 @@ const router = express.Router();
 router.post( "/client",authMiddleware, checkRoles(["secretary"]), validateFields(["username","telephone", "email", "password"]), ClientController.createClient );
 router.get( "/schedules",authMiddleware, checkRoles(["secretary"]), AppointmentsController.listSchedules );
 router.post( "/appointments/:id",authMiddleware, checkRoles(["secretary"]), AppointmentsController.createAppointments );
+router.get( "/allAppointments",authMiddleware, checkRoles(["secretary"]), AppointmentsController.listAppointments );
+router.post( "/appointments/update/:id",authMiddleware, checkRoles(["secretary"]), AppointmentsController.updateAppointment );
+
+
 
 export default router;

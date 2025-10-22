@@ -45,14 +45,14 @@ class AppointmentsService {
           };
         }
 
-        const hoursToWorkByDoctor = hoursBySchedule[scheduleId].hoursToWorkByDoctor;
+        const hoursToWorkByDoctor =
+          hoursBySchedule[scheduleId].hoursToWorkByDoctor;
 
         hoursBySchedule[scheduleId].totalHours += hoursToWorkByPatient;
-
       });
-      
+
       const schedulesComplete = [];
-      
+
       for (const [scheduleId, data] of Object.entries(hoursBySchedule)) {
         const { totalHours, hoursToWorkByDoctor } = data;
 
@@ -61,8 +61,9 @@ class AppointmentsService {
         }
       }
 
-      const getSchedulesAvailable = await AppointmentsRepository.getSchedulesAvailable( schedulesComplete );
-      
+      const getSchedulesAvailable =
+        await AppointmentsRepository.getSchedulesAvailable(schedulesComplete);
+
       const output = getSchedulesAvailable.map((user) => ({
         ...user.dataValues,
         links: {
@@ -116,6 +117,46 @@ class AppointmentsService {
       return createAppointments;
     } catch (error) {
       throw new Error("Erro ao criar consulta: " + error.message);
+    }
+  }
+  async listAllAppointments() {
+    try {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = (today.getMonth() + 1).toString().padStart(2, "0");
+      const day = today.getDate().toString().padStart(2, "0");
+      const dateFormate = `${year}-${month}-${day}`;
+
+      const appointments =
+        await AppointmentsRepository.getAllAppointmentsDetailed(dateFormate);
+
+      const output = appointments.map((app) => ({
+        ...app,
+        links: {
+          update: `${baseUrl}${API_PREFIX}/appointments/update/${app.id}`,
+          delete: `${baseUrl}${API_PREFIX}/appointments/delete/${app.id}`,
+        },
+      }));
+
+      return output;
+    } catch (error) {
+      throw new Error("Erro ao listar consultas: " + error.message);
+    }
+  }
+  async updateAppointment(appointmentId, userData) {
+    const { date, dateOfWeek, startTime, endTime, status } = userData;
+    try {
+      const updateDateOfWeek = await AppointmentsRepository.updateDateOfWeek(
+        appointmentId,
+        dateOfWeek
+      );
+      const updateAppointment = await AppointmentsRepository.updateAppointment(
+        appointmentId,
+        userData
+      );
+      return updateAppointment;
+    } catch (error) {
+      throw new Error("Erro ao atualizar consulta: " + error.message);
     }
   }
 }

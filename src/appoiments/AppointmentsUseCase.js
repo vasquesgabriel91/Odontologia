@@ -21,6 +21,25 @@ class AppointmentsUseCase {
       throw new Error(`Error: ${error.message}`);
     }
   }
+  async getAllAppointments() {
+    try {
+      const appointments = await AppointmentsService.listAllAppointments();
+      return appointments;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+  async updateAppointment(appointmentId, userData) {
+    try {
+      const updateAppointment = await AppointmentsService.updateAppointment(
+        appointmentId,
+        userData
+      );
+      return updateAppointment;
+    } catch (error) {
+      throw new Error(error.message);
+    } 
+  }
 }
 
 export default new AppointmentsUseCase();

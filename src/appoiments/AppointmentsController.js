@@ -25,5 +25,23 @@ class AppointmentsController {
       res.status(400).json({ error: error.message });
     }
   }
+  async listAppointments(req, res) {
+    try {
+      const appointments = await AppointmentsUseCase.getAllAppointments();
+      res.status(200).json(appointments);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    } 
+  }
+  async updateAppointment(req, res) {
+    try {
+      const appointmentId = req.params.id;
+      const userData = req.body;
+      const  updateAppointment = await AppointmentsUseCase.updateAppointment(appointmentId, userData);
+      res.status(200).json({updateAppointment});
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
 }
 export default new AppointmentsController();

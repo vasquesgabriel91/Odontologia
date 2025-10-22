@@ -1,5 +1,6 @@
 import AppointmentModel from "./AppointmentsModel.js";
 import SchedulesModel from "../schedules/SchedulesModel.js";
+import User from "../user/UserModel.js";
 import { Op, fn, col, where, literal } from "sequelize";
 class AppointmentsRepository {
   async createAppointments(
@@ -74,6 +75,23 @@ class AppointmentsRepository {
   async getScheduleById(id) {
     const schedule = await SchedulesModel.findByPk(id);
     return schedule;
+  }
+
+  async getAllAppointmentsDetailed(dateFormate) {
+
+      const appointments = await AppointmentModel.findAll({
+        where: {
+          date: {
+            [Op.gte]: dateFormate, 
+          },
+        },
+        include: [
+          { model: User, as: "doctor" },
+          { model: User, as: "patient" },
+          { model: SchedulesModel, as: "schedule" },
+        ],
+      });
+      return appointments.map((app) => app.toJSON());
   }
 }
 export default new AppointmentsRepository();
