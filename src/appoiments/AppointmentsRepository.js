@@ -50,15 +50,19 @@ class AppointmentsRepository {
   }
   async getSchedulesAvailable(schedulesComplete = []) {
     const schedules = await SchedulesModel.findAll({
-      model: AppointmentModel,
-      as: "appointments",
-      required: false,
-      where: {
-        status: {
-          [Op.in]: ["agendado", "concluído", "cancelado"],
+      include: [
+        {
+          model: AppointmentModel,
+          as: "appointments",
+          required: false,
+          attributes: ["startTime"],
+          where: {
+            status: {
+              [Op.in]: ["agendado", "concluído", "cancelado"],
+            },
+          },
         },
-      },
-
+      ],
       where: {
         id: { [Op.notIn]: schedulesComplete },
       },
