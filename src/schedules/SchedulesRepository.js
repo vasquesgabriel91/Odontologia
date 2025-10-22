@@ -1,4 +1,5 @@
 import SchedulesModel from "./SchedulesModel.js";
+import AppointmentsModel from "../appointments/AppointmentsModel.js";
 
 class SchedulesRepository {
   async create(finalData) {
@@ -10,6 +11,12 @@ class SchedulesRepository {
       where: { doctorId: idUser },
     });
     return getSchedules;
+  }
+  async findAppointmentsByDoctorId(id) {
+    const getAppointments = await AppointmentsModel.findAll({
+      where: { doctorId: id },
+    });
+    return getAppointments.map((app) => app.toJSON());
   }
 }
 export default new SchedulesRepository();

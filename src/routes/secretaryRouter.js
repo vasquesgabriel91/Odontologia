@@ -1,6 +1,6 @@
 import express from "express";
 import ClientController from "../client/ClientController.js";
-import AppointmentsController from "../appoiments/AppointmentsController.js"
+import AppointmentsController from "../appointments/AppointmentsController.js"
 import validateFields from "../middlewares/validateFields.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import checkRoles from "../middlewares/checkRoles.js";

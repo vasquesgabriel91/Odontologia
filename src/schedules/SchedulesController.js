@@ -23,6 +23,15 @@ class SchedulesController {
       res.status(400).json({ error: error.message });
     }
   }
+  async getMyAppointments(req, res) {
+    try {
+      const id = req.user.id;
+      const appointments = await SchedulesUseCase.getMyAppointments(id);
+      res.status(200).json(appointments);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    } 
+  }
 }
 
 export default new SchedulesController();

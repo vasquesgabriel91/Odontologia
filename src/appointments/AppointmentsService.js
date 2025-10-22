@@ -127,7 +127,6 @@ class AppointmentsService {
       const day = today.getDate().toString().padStart(2, "0");
       const dateFormate = `${year}-${month}-${day}`;
 
-      console.log("Date Formate:", dateFormate);
       const appointments =
         await AppointmentsRepository.getAllAppointmentsDetailed(dateFormate);
 
@@ -149,7 +148,7 @@ class AppointmentsService {
     try {
       const getAppointmentById = await AppointmentsRepository.getAppointmentById(appointmentId);
       const scheduleId = getAppointmentById.scheduleId;
-      console .log("Schedule ID:", userData);
+
       const updateDateOfWeek = await AppointmentsRepository.updateDateOfWeek(scheduleId, dateOfWeek, dayOfWeek);
 
       const updateAppointment = await AppointmentsRepository.updateAppointment(appointmentId, dayOfWeek, startTime, endTime, status);

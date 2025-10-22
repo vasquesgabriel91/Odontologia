@@ -17,6 +17,14 @@ class SchedulesUseCase {
       throw new Error(`Erro: ${error.message}`);
     }
   }
+  async getMyAppointments(id) {
+    try {
+      const appointments = await SchedulesService.getMyAppointments(id);
+      return appointments;
+    } catch (error) {
+      throw new Error(error.message);
+    } 
+  }
 }
 
 export default new SchedulesUseCase();

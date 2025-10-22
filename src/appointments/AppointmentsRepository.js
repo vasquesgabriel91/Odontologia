@@ -76,19 +76,27 @@ class AppointmentsRepository {
     const schedule = await SchedulesModel.findByPk(id);
     return schedule;
   }
+
   async getAppointmentById(id) {
     const appointment = await AppointmentModel.findByPk(id);
     return appointment;
   }
+
   async getAllAppointmentsDetailed(dateFormate) {
     const appointments = await AppointmentModel.findAll({
       include: [
-        { model: User, as: "doctor" },
-        { model: User, as: "patient" },
+        {
+          model: User,
+          as: "patient",
+          attributes: {
+            exclude: ["password"],
+          },
+        },
         {
           model: SchedulesModel,
           as: "schedule",
-          required: true, 
+          required: true,
+          attributes: [], 
           where: {
             dateOfWeek: {
               [Op.gte]: dateFormate,
@@ -100,6 +108,7 @@ class AppointmentsRepository {
 
     return appointments.map((app) => app.toJSON());
   }
+
   async updateDateOfWeek(scheduleId, dateOfWeek, dayOfWeek) {
     const appointment = await SchedulesModel.update(
       { dateOfWeek, dayOfWeek },
@@ -107,6 +116,7 @@ class AppointmentsRepository {
     );
     return appointment;
   }
+
   async updateAppointment(appointmentId, date, startTime, endTime, status) {
     const appointment = await AppointmentModel.update(
       { date, startTime, endTime, status },
