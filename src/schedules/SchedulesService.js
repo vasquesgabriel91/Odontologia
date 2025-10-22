@@ -24,7 +24,7 @@ class SchedulesService {
       const output = myAppointments.map((appointment) => ({
         ...appointment,
         link: {
-          href: `http://localhost:3000/appointments/${appointment.id}`,
+          href: `http://localhost:3000/appointmentsObservation/${appointment.id}`,
         },
       }));
       
