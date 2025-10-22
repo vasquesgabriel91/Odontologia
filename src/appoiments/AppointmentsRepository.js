@@ -100,10 +100,10 @@ class AppointmentsRepository {
 
     return appointments.map((app) => app.toJSON());
   }
-  async updateDateOfWeek(scheduleId, dateOfWeek, date) {
-    const appointment = await AppointmentModel.update(
-      { dateOfWeek, date },
-      { where: { scheduleId: scheduleId } }
+  async updateDateOfWeek(scheduleId, dateOfWeek, dayOfWeek) {
+    const appointment = await SchedulesModel.update(
+      { dateOfWeek, dayOfWeek },
+      { where: { id: scheduleId } }
     );
     return appointment;
   }

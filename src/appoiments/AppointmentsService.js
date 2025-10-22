@@ -145,14 +145,14 @@ class AppointmentsService {
     }
   }
   async updateAppointment(appointmentId, userData) {
-    const { date, dateOfWeek, startTime, endTime, status } = userData;
+    const { dateOfWeek, dayOfWeek, startTime, endTime, status } = userData;
     try {
       const getAppointmentById = await AppointmentsRepository.getAppointmentById(appointmentId);
       const scheduleId = getAppointmentById.scheduleId;
+      console .log("Schedule ID:", userData);
+      const updateDateOfWeek = await AppointmentsRepository.updateDateOfWeek(scheduleId, dateOfWeek, dayOfWeek);
 
-      const updateDateOfWeek = await AppointmentsRepository.updateDateOfWeek(scheduleId, dateOfWeek, date);
-
-      const updateAppointment = await AppointmentsRepository.updateAppointment(appointmentId, date, startTime, endTime, status);
+      const updateAppointment = await AppointmentsRepository.updateAppointment(appointmentId, dayOfWeek, startTime, endTime, status);
       return updateAppointment;
     } catch (error) {
       throw new Error("Erro ao atualizar consulta: " + error.message);
