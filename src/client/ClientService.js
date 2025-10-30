@@ -63,21 +63,24 @@ class ClientService {
     return output;
   }
   async listMyAppointmentsClient(clientId) {
-    try {
-      const appointments = await UserRepository.getAppointmentsByClientId(
-        clientId
-      );
-      const output = appointments.map((appointment) => ({
-        appointment,
-        link: {
-          create: `${baseUrl}${API_PREFIX}/myAppointment/Cancel/${appointment.id}`,
-        },
-      }));
-      return output;
-    } catch (error) {
-      throw new Error("Erro ao listar os agendamentos: " + error.message);
-    }
-  }
+    try {
+        // [V51 - CORREÇÃO]
+        // Chamamos a nova função do repositório que faz o 'include'
+      const appointments = await UserRepository.getAppointmentsByClientIdWithDoctor(
+        clientId
+      );
+      const output = appointments.map((appointment) => ({
+        // Agora 'appointment' é o objeto completo com 'doctor'
+        appointment, 
+        link: {
+          create: `${baseUrl}${API_PREFIX}/myAppointment/Cancel/${appointment.id}`,
+        },
+       }));
+      return output;
+    } catch (error) {
+      throw new Error("Erro ao listar os agendamentos: " + error.message);
+    }
+  }
   async updateAppointmentClient(appointmentId, status) {
     try {
       const appointment = await UserRepository.updateAppointmentStatusById(

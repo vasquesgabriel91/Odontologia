@@ -1,6 +1,8 @@
 import UserModel from "./UserModel.js";
 import AppointmentModel from "../appointments/AppointmentsModel.js";
 import { Op } from "sequelize";
+import ObservationModel from "../observationAppointment/ObservationModel.js"; 
+
 
 class UsersRepository {
   async create(userData) {
@@ -56,6 +58,28 @@ class UsersRepository {
     });
     return appointments;
   }
+ async getAppointmentsByClientIdWithDoctor(clientId) {
+  const appointments = await AppointmentModel.findAll({
+    where: { patientId: clientId },
+    include: [
+      {
+        model: UserModel,
+        as: 'doctor', 
+        attributes: ['id', 'username'] 
+      },
+      // --- [ INÍCIO DA ADIÇÃO V52 ] ---
+      // Inclui os prontuários associados a este agendamento
+      {
+        model: ObservationModel,
+        as: 'observations', // 'as' vem do AppointmentModel.hasMany
+        attributes: ['diagnostic', 'procedures', 'recommendations', 'exams']
+      }
+      // --- [ FIM DA ADIÇÃO V52 ] ---
+    ],
+    order: [['date', 'ASC'], ['startTime', 'ASC']]
+  });
+  return appointments.map(app => app.toJSON()); 
+}
   async updateAppointmentStatusById(appointmentId, status) {
     const appointment = await AppointmentModel.findByPk(appointmentId);
     if (!appointment) {

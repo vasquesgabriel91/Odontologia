@@ -4,7 +4,9 @@ import checkRoles from "../middlewares/checkRoles.js";
 import clientController from "../client/ClientController.js";
 const router = express.Router();
 
-router.get ( "/getAllMyAppointmentPatient", authMiddleware, checkRoles(["client","secretary"]), clientController.myAppointmentPatient);
-router.put ( "/myAppointment/Cancel/:id", authMiddleware, checkRoles(["client","secretary"]), clientController.myAppointmentPatientCancel);
+const allowedClientRoles = ["client", "secretary", "cliente", "Client"];
+
+router.get ( "/getAllMyAppointmentPatient", authMiddleware, checkRoles(allowedClientRoles), clientController.myAppointmentPatient);
+router.put ( "/myAppointment/Cancel/:id", authMiddleware, checkRoles(allowedClientRoles), clientController.myAppointmentPatientCancel);
 
 export default router;

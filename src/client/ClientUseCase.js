@@ -9,14 +9,16 @@ class ClientUseCase {
       throw new Error(`Erro: ${error.message}`);
     }
   }
-  async getMyAppointmentsClient(clientId) {
-    try {
-      const appointments = await ClientService.listMyAppointmentsClient(clientId);
-      return appointments;
-    } catch (error) {
-      throw new Error(error.message);
-    }   
-  }
+ async getMyAppointmentsClient(clientId) {
+    try {
+        // [V51 - CORREÇÃO]
+        // Apenas repassa a chamada. O Service fará o trabalho.
+      const appointments = await ClientService.listMyAppointmentsClient(clientId);
+      return appointments;
+    } catch (error) {
+      throw new Error(error.message);
+    }   
+  }
   async updateAppointment(appointmentId) {
     try {
       const status = "cancelado";
