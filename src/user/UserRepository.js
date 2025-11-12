@@ -1,10 +1,13 @@
 import UserModel from "./UserModel.js";
+import AddressModel from "../address/addressModel.js";
 import AppointmentModel from "../appointments/AppointmentsModel.js";
 import { Op } from "sequelize";
 
 class UsersRepository {
   async create(userData) {
-    const secretary = await UserModel.create(userData);
+    const secretary = await UserModel.create(userData, {
+      include: [{ model: AddressModel, as: "addresses" }],
+    });
     return secretary;
   }
   async findById(id) {

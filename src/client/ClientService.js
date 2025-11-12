@@ -2,6 +2,7 @@ import UserRepository from "../user/UserRepository.js";
 import validatePassword from "../helpers/passwordValidator.js";
 import validateFields from "../helpers/validateField.js";
 import bcrypt from "bcryptjs";
+import e from "express";
 const API_PREFIX = process.env.API_PREFIX;
 const baseUrl = process.env.BASE_URL;
 
@@ -33,9 +34,13 @@ class ClientService {
   async hashPassword(password) {
     return await bcrypt.hash(password, 10);
   }
+  async validateZipCode(zipCode) {
+    const isValid = validateFields.validateZipCode(zipCode);
+    if (!isValid) throw new Error("CEP inválido");
+  }
 
   async createClient(userData) {
-    const { username, password, email, telephone } = userData;
+    const { username, password, email, telephone, zipCode } = userData;
     const role = "client";
     await this.validateUserNameUnique(username);
     await this.isPasswordStrong(password);
@@ -43,13 +48,26 @@ class ClientService {
     await this.validateTelephoneUnique(telephone);
     await this.validateCellphoneUnique(telephone);
     await this.validateForEmail(email);
+    await this.validateZipCode(zipCode);
 
     const hashedPassword = await this.hashPassword(password);
     const newUserData = {
-      ...userData,
-      role,
+      username,
       password: hashedPassword,
+      email,
+      telephone,
+      role,
+      addresses: [
+        {
+          zipCode: userData.zipCode,
+          street: userData.street,
+          number: userData.number,
+          state: userData.state,
+          neighborhood: userData.neighborhood,
+        },
+      ],
     };
+
     const execute = await UserRepository.create(newUserData);
 
     const output = {
@@ -58,6 +76,13 @@ class ClientService {
       username: execute.username,
       email: execute.email,
       telephone: execute.telephone,
+      addresses: execute.addresses?.map((addr) => ({
+        zipCode: addr.zipCode,
+        street: addr.street,
+        number: addr.number,
+        state: addr.state,
+        neighborhood: addr.neighborhood,
+      })),
     };
 
     return output;
