@@ -3,43 +3,37 @@ import e from "express";
 import ClientUseCase from "./ClientUseCase.js";
 
 class ClientController {
-  // ... (função createClient não muda)
-  async createClient(req, res) {
-    const userData = req.body;
-    try {
-      const create = await ClientUseCase.execute(userData);
-      res.status(201).json({
-        message: create,
-      });
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
-  }
-
-  async myAppointmentPatient(req, res) {
-    const clientId = req.user.id;
-    try {
-        // [V51 - CORREÇÃO]
-        // Chamamos o UseCase que agora busca os dados do médico
-      const appointments = await ClientUseCase.getMyAppointmentsClient(clientId);
-      res.status(200).json(appointments);
-    }
-    catch (error) {
-      res.status(400).json({ error: error.message });
-    }
-  }
-  
-  // ... (função myAppointmentPatientCancel não muda)
-  async myAppointmentPatientCancel(req, res) {
-    const appointmentId = req.params.id;
-    try {
-      const updateAppointment = await ClientUseCase.updateAppointment(appointmentId);
-      res.status(200).json({ updateAppointment });
-    }
-    catch (error) {
-      res.status(400).json({ error: error.message });
-    }
-  }
+  async createClient(req, res) {
+    const userData = req.body;
+    try {
+      const create = await ClientUseCase.execute(userData);
+      res.status(201).json({
+        message: create,
+      });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+  async myAppointmentPatient(req, res) {
+    const clientId = req.user.id; 
+    try {
+      const appointments = await ClientUseCase.getMyAppointmentsClient(clientId);
+      res.status(200).json(appointments);
+    }
+    catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+  async myAppointmentPatientCancel(req, res) {
+    const appointmentId = req.params.id;
+    try {
+      const updateAppointment = await ClientUseCase.updateAppointment(appointmentId);
+      res.status(200).json({ updateAppointment });
+    }
+    catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
 }
 
 export default new ClientController();

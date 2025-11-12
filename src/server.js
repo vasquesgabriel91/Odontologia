@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import http from "http";
-import sequelize from "./database/database.js";
+import sequelize from "./database/DatabaseSingleton.js";
 import appConfig from "./config/app.js";
 import logger from "./shared/logger.js  ";
 import authRouter from "./routes/authRouter.js";
