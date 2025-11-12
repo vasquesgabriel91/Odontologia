@@ -9,7 +9,6 @@ const router = express.Router();
 
 router.post("/schedules",authMiddleware, checkRoles(["doctor"]), SchedulesController.createSchedules);
 router.get("/mySchedules",authMiddleware, checkRoles(["doctor"]), SchedulesController.getMySchedules);
-router.post("/schedules",authMiddleware, checkRoles(["doctor"]), SchedulesController.createSchedules);
 router.get("/getMyAppointments",authMiddleware, checkRoles(["doctor"]), SchedulesController.getMyAppointments);
 router.post("/appointmentsObservation/:id", authMiddleware, uploadImage.single('image'),checkRoles(["doctor"]), ObservationController.createObservationAppointment);
 
