@@ -116,13 +116,12 @@ class ClientService {
   }
   async getClientProfile(clientId) {
     try {
-      console.log("Fetching profile for clientId:", clientId);
       const client = await UserRepository.findByIdAddressModel(clientId);
       if (!client) throw new Error("Cliente não encontrado");
       const output = {
         ...client,
         link: {
-          update: `http://localhost:3000/client/update/${client.id}`,
+          update: `http://localhost:3000/api/v1/patient/update/${client.id}`,
         },
       };
       return output;
@@ -130,6 +129,8 @@ class ClientService {
       throw new Error("Erro ao obter o perfil do cliente: " + error.message);
     }
   }
+
+  
 }
 
 export default new ClientService();

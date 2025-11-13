@@ -88,5 +88,32 @@ class UsersRepository {
 
     return appointment;
   }
+  async updateUserAndAddresses(idParam, data) {
+    try {
+      const { addresses, ...userData } = data;
+
+      if (Object.keys(userData).length > 0) {
+        await UserModel.update(userData, { where: { id: idParam } });
+      }
+
+      if (addresses && Object.keys(addresses).length > 0) {
+        const existingAddress = await AddressModel.findOne({
+          where: { idUser: idParam },
+        });
+
+        if (existingAddress) {
+          await AddressModel.update(addresses, { where: { idUser: idParam } });
+        } else {
+          await AddressModel.create({ ...addresses, idUser: idParam });
+        }
+      }
+
+      return await UserModel.findByPk(idParam, {
+        include: [{ model: AddressModel, as: "addresses" }],
+      });
+    } catch (error) {
+      throw new Error("Erro ao atualizar usuário: " + error.message);
+    }
+  }
 }
 export default new UsersRepository();

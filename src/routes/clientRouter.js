@@ -4,7 +4,8 @@ import checkRoles from "../middlewares/checkRoles.js";
 import clientController from "../client/ClientController.js";
 const router = express.Router();
 
-router.get ( "/getMyClient", authMiddleware, checkRoles(["client"]), clientController.getMyProfile);
+router.get ( "/getMyUser", authMiddleware, checkRoles(["client"]), clientController.getMyProfile);
+router.put ( "/patient/update/:id", authMiddleware, checkRoles(["client"]), clientController.updateUser);
 router.get ( "/getAllMyAppointmentPatient", authMiddleware, checkRoles(["client","secretary"]), clientController.myAppointmentPatient);
 router.put ( "/myAppointment/Cancel/:id", authMiddleware, checkRoles(["client","secretary"]), clientController.myAppointmentPatientCancel);
 
