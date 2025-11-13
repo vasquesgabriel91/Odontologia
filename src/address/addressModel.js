@@ -1,6 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../database/database.js";
-import User from "../user/UserModel.js";
+import UserModel from "../user/UserModel.js";
 import e from "express";
 
 class AddressModel extends Model {}
@@ -44,8 +44,4 @@ AddressModel.init(
     timestamps: true,
     }
 );
-
-AddressModel.belongsTo(User, { foreignKey: "idUser", as: "user" });
-User.hasMany(AddressModel, { foreignKey: "idUser", as: "addresses" });
-
 export default AddressModel;

@@ -117,6 +117,23 @@ class ClientService {
       throw new Error("Erro ao atualizar o agendamento: " + error.message);
     }
   }
+  async getClientProfile(clientId) {
+    try {
+      const client = await UserRepository.findByIdAddressModel(clientId);
+      if (!client) throw new Error("Cliente não encontrado");
+      const output = {
+        ...client,
+        link: {
+          update: `http://localhost:3000/api/v1/patient/update/${client.id}`,
+        },
+      };
+      return output;
+    } catch (error) {
+      throw new Error("Erro ao obter o perfil do cliente: " + error.message);
+    }
+  }
+
+  
 }
 
 export default new ClientService();
