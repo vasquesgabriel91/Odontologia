@@ -17,7 +17,7 @@ class ClientController {
     const clientId = req.user.id;
     try {
       const clientProfile = await ClientUseCase.getMyProfile(clientId); 
-      res.status(200).json(clientProfile.toJSON());
+      res.status(200).json(clientProfile);
     } catch (error) {
       res.status(400).json({ error: error.message });
     }

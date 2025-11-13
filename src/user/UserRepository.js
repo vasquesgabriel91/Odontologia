@@ -17,11 +17,20 @@ class UsersRepository {
     return getUser;
   }
   async findByIdAddressModel(id) {
-    const getUser = await UserModel.findByPk( id,{
+    const getUser = await UserModel.findByPk(id, {
       attributes: { exclude: ["password", "createdAt", "updatedAt"] },
-      include: [{ model: AddressModel, as: "addresses" }],
+      include: [
+        {
+          model: AddressModel,
+          as: "addresses",
+          attributes: {
+            exclude: ["idUser"],
+          },
+        },
+      ],
+      raw: true,
+      nest: true,
     });
-    console.log("User with address:", getUser);
     return getUser;
   }
   async findByUserName(username) {

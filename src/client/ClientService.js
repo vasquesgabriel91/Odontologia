@@ -118,12 +118,18 @@ class ClientService {
     try {
       console.log("Fetching profile for clientId:", clientId);
       const client = await UserRepository.findByIdAddressModel(clientId);
-      if (!client) throw new Error("Cliente não encontrado"); 
-      return client;
+      if (!client) throw new Error("Cliente não encontrado");
+      const output = {
+        ...client,
+        link: {
+          update: `http://localhost:3000/client/update/${client.id}`,
+        },
+      };
+      return output;
     } catch (error) {
       throw new Error("Erro ao obter o perfil do cliente: " + error.message);
     }
- }
+  }
 }
 
 export default new ClientService();
