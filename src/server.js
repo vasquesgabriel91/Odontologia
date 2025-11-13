@@ -10,6 +10,7 @@ import adminRouter from "./routes/adminRouter.js";
 import secretaryRouter from "./routes/secretaryRouter.js";
 import doctorRouter from "./routes/doctorRouter.js";
 import clientRouter from "./routes/clientRouter.js";
+import "./models/addressAssociation.js";
 
 dotenv.config();
 const API_PREFIX = process.env.API_PREFIX;

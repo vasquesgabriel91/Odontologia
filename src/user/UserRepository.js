@@ -16,6 +16,14 @@ class UsersRepository {
     });
     return getUser;
   }
+  async findByIdAddressModel(id) {
+    const getUser = await UserModel.findByPk( id,{
+      attributes: { exclude: ["password", "createdAt", "updatedAt"] },
+      include: [{ model: AddressModel, as: "addresses" }],
+    });
+    console.log("User with address:", getUser);
+    return getUser;
+  }
   async findByUserName(username) {
     return await UserModel.findOne({ where: { username } });
   }

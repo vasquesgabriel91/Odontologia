@@ -114,6 +114,16 @@ class ClientService {
       throw new Error("Erro ao atualizar o agendamento: " + error.message);
     }
   }
+  async getClientProfile(clientId) {
+    try {
+      console.log("Fetching profile for clientId:", clientId);
+      const client = await UserRepository.findByIdAddressModel(clientId);
+      if (!client) throw new Error("Cliente não encontrado"); 
+      return client;
+    } catch (error) {
+      throw new Error("Erro ao obter o perfil do cliente: " + error.message);
+    }
+ }
 }
 
 export default new ClientService();

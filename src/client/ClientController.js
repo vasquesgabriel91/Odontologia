@@ -13,6 +13,16 @@ class ClientController {
       res.status(400).json({ error: error.message });
     }
   }
+  async getMyProfile(req, res) {
+    const clientId = req.user.id;
+    try {
+      const clientProfile = await ClientUseCase.getMyProfile(clientId); 
+      res.status(200).json(clientProfile.toJSON());
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+
   async myAppointmentPatient(req, res) {
     const clientId = req.user.id;
     try {

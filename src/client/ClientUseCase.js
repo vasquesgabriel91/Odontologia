@@ -26,5 +26,13 @@ class ClientUseCase {
       throw new Error(error.message);
     } 
   }
+  async getMyProfile(clientId) {
+    try {
+      const clientProfile = await ClientService.getClientProfile(clientId);
+      return clientProfile;
+    } catch (error) {
+      throw new Error(error.message);
+    } 
+  }
 }
 export default new ClientUseCase();
