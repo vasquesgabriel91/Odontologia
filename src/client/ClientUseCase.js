@@ -9,7 +9,7 @@ class ClientUseCase {
       throw new Error(`Erro: ${error.message}`);
     }
   }
-<<<<<<< HEAD
+
  async getMyAppointmentsClient(clientId) {
     try {
         // [V51 - CORREÇÃO]
@@ -20,18 +20,7 @@ class ClientUseCase {
       throw new Error(error.message);
     }   
   }
-=======
-  async getMyAppointmentsClient(clientId) {
-    try {
-      const appointments = await ClientService.listMyAppointmentsClient(
-        clientId
-      );
-      return appointments;
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  }
->>>>>>> c6569ed0bc3880f7c1c9ca572e5e8e067e90d82a
+
   async updateAppointment(appointmentId) {
     try {
       const status = "cancelado";
@@ -71,6 +60,22 @@ class ClientUseCase {
         userData
       );
       return updatedUser;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async getProfile(clientId) {
+    try {
+      return await ClientService.getProfile(clientId);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async updateProfile(clientId, data) {
+    try {
+      return await ClientService.updateProfile(clientId, data);
     } catch (error) {
       throw new Error(error.message);
     }

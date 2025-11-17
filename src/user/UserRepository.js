@@ -2,8 +2,7 @@ import UserModel from "./UserModel.js";
 import AddressModel from "../address/addressModel.js";
 import AppointmentModel from "../appointments/AppointmentsModel.js";
 import { Op } from "sequelize";
-import ObservationModel from "../observationAppointment/ObservationModel.js"; 
-
+import ObservationModel from "../observationAppointment/ObservationModel.js";
 
 class UsersRepository {
   async create(userData) {
@@ -12,12 +11,14 @@ class UsersRepository {
     });
     return secretary;
   }
+
   async findById(id) {
     const getUser = await UserModel.findByPk(id, {
       attributes: { exclude: ["password", "createdAt", "updatedAt"] },
     });
     return getUser;
   }
+
   async findByIdAddressModel(id) {
     const getUser = await UserModel.findByPk(id, {
       attributes: { exclude: ["password", "createdAt", "updatedAt"] },
@@ -26,18 +27,19 @@ class UsersRepository {
           model: AddressModel,
           as: "addresses",
           attributes: {
-            exclude: ["idUser"],
+            exclude: ["idUser", "createdAt", "updatedAt"],
           },
         },
       ],
-      raw: true,
-      nest: true,
     });
-    return getUser;
+    
+    return getUser ? getUser.toJSON() : null;
   }
+
   async findByUserName(username) {
     return await UserModel.findOne({ where: { username } });
   }
+
   async findByUserNameOrEmail(usernameOrEmail) {
     const user = await UserModel.findOne({
       where: {
@@ -46,6 +48,7 @@ class UsersRepository {
     });
     return user;
   }
+
   async findByTelephone(telephone) {
     return await UserModel.findOne({ where: { telephone } });
   }
@@ -72,34 +75,37 @@ class UsersRepository {
     await UserModel.update(userData, { where: { id } });
     return await UserModel.findByPk(id);
   }
+
   async getAppointmentsByClientId(clientId) {
     const appointments = await AppointmentModel.findAll({
       where: { patientId: clientId },
     });
     return appointments;
   }
- async getAppointmentsByClientIdWithDoctor(clientId) {
-  const appointments = await AppointmentModel.findAll({
-    where: { patientId: clientId },
-    include: [
-      {
-        model: UserModel,
-        as: 'doctor', 
-        attributes: ['id', 'username'] 
-      },
-      // --- [ INÍCIO DA ADIÇÃO V52 ] ---
-      // Inclui os prontuários associados a este agendamento
-      {
-        model: ObservationModel,
-        as: 'observations', // 'as' vem do AppointmentModel.hasMany
-        attributes: ['diagnostic', 'procedures', 'recommendations', 'exams']
-      }
-      // --- [ FIM DA ADIÇÃO V52 ] ---
-    ],
-    order: [['date', 'ASC'], ['startTime', 'ASC']]
-  });
-  return appointments.map(app => app.toJSON()); 
-}
+
+  async getAppointmentsByClientIdWithDoctor(clientId) {
+    const appointments = await AppointmentModel.findAll({
+      where: { patientId: clientId },
+      include: [
+        {
+          model: UserModel,
+          as: "doctor",
+          attributes: ["id", "username"],
+        },
+        {
+          model: ObservationModel,
+          as: "observations",
+          attributes: ["diagnostic", "procedures", "recommendations", "exams"],
+        },
+      ],
+      order: [
+        ["date", "ASC"],
+        ["startTime", "ASC"],
+      ],
+    });
+    return appointments.map((app) => app.toJSON());
+  }
+
   async updateAppointmentStatusById(appointmentId, status) {
     const appointment = await AppointmentModel.findByPk(appointmentId);
     if (!appointment) {
@@ -112,32 +118,6 @@ class UsersRepository {
 
     return appointment;
   }
-  async updateUserAndAddresses(idParam, data) {
-    try {
-      const { addresses, ...userData } = data;
-
-      if (Object.keys(userData).length > 0) {
-        await UserModel.update(userData, { where: { id: idParam } });
-      }
-
-      if (addresses && Object.keys(addresses).length > 0) {
-        const existingAddress = await AddressModel.findOne({
-          where: { idUser: idParam },
-        });
-
-        if (existingAddress) {
-          await AddressModel.update(addresses, { where: { idUser: idParam } });
-        } else {
-          await AddressModel.create({ ...addresses, idUser: idParam });
-        }
-      }
-
-      return await UserModel.findByPk(idParam, {
-        include: [{ model: AddressModel, as: "addresses" }],
-      });
-    } catch (error) {
-      throw new Error("Erro ao atualizar usuário: " + error.message);
-    }
-  }
 }
+
 export default new UsersRepository();

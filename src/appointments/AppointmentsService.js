@@ -1,13 +1,4 @@
-/*
- * ========================================================================
- * ARQUIVO: src/appointments/AppointmentsService.js (V50)
- * RESPONSABILIDADE: Camada de Lógica de Negócios (Business Logic).
- * Orquestra repositórios (Appointments, User), valida dados,
- * verifica conflitos e lança erros amigáveis para o frontend.
- * ========================================================================
- */
 
-// Repositórios (nossas dependências)
 import AppointmentsRepository from "./AppointmentsRepository.js";
 import UserRepository from "../user/UserRepository.js"; // Assume que está em ../user/
 
@@ -18,15 +9,6 @@ const baseUrl = process.env.BASE_URL;
 
 class AppointmentsService {
   
-  // PhD Note: Injeção de Dependência
-  // Em uma V60+, os repositórios seriam injetados no construtor
-  // constructor(AppointmentsRepository, UserRepository) { ... }
-  // Mas para manter seu padrão de singleton, nós os acessamos estaticamente.
-
-  /**
-   * [V50] Lógica de Negócios: Verifica conflito de horários.
-   * Lança um erro amigável se houver sobreposição.
-   */
   async checkConflict({ doctorId, date, newStartTime, newEndTime, appointmentIdToExclude = null }) {
     const existingAppointments =
       await AppointmentsRepository.findAppointmentsByDoctorAndDate({
@@ -36,7 +18,7 @@ class AppointmentsService {
       });
 
     for (const app of existingAppointments) {
-      // Lógica de conflto: (NovoInício < FimExistente) E (NovoFim > InícioExistente)
+
       if (newStartTime < app.endTime && newEndTime > app.startTime) {
         throw new Error(
           `Horário indisponível (${newStartTime}-${newEndTime}). Já existe uma consulta agendada das ${app.startTime} às ${app.endTime}.`

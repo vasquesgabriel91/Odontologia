@@ -56,6 +56,27 @@ class ClientController {
       res.status(400).json({ error: error.message });
     }
   }
+
+  async getProfile(req, res) {
+    const clientId = req.user.id;
+    try {
+      const profile = await ClientUseCase.getProfile(clientId);
+      res.status(200).json(profile);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+
+  async updateProfile(req, res) {
+    const clientId = req.user.id; 
+    const userData = req.body;
+    try {
+      const updatedProfile = await ClientUseCase.updateProfile(clientId, userData);
+      res.status(200).json(updatedProfile);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
 }
 
 export default new ClientController();
