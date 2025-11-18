@@ -9,9 +9,8 @@ router.get ( "/getMyUser", authMiddleware, checkRoles(["client"]), clientControl
 router.put ( "/patient/update/:id", authMiddleware, checkRoles(["client"]), clientController.updateUser);
 router.get ( "/getAllMyAppointmentPatient", authMiddleware, checkRoles(["client","secretary"]), clientController.myAppointmentPatient);
 router.put ( "/myAppointment/Cancel/:id", authMiddleware, checkRoles(["client","secretary"]), clientController.myAppointmentPatientCancel);
-const allowedClientRoles = ["client", "secretary"]; 
 
-router.get("/client/profile", authMiddleware, checkRoles(allowedClientRoles), clientController.getProfile);
-router.put("/client/profile", authMiddleware, checkRoles(allowedClientRoles), clientController.updateProfile);
+router.get("/client/profile", authMiddleware, checkRoles(["client", "secretary"]), clientController.getMyProfile);
+router.put("/client/profile", authMiddleware, checkRoles(["client", "secretary"]), clientController.updateUser);
 
 export default router;
