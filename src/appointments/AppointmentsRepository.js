@@ -84,6 +84,9 @@ class AppointmentsRepository {
 
   async getAllAppointmentsDetailed(dateFormate) {
     const appointments = await AppointmentModel.findAll({
+      attributes: {
+          exclude: ["doctorId","patientId","scheduleId","date","startTime", "endTime","createdAt","updatedAt"],
+        },
       include: [
         {
           model: User,
@@ -96,7 +99,7 @@ class AppointmentsRepository {
           model: SchedulesModel,
           as: "schedule",
           required: true,
-          attributes: [], 
+          attributes: ["id", "doctorId", "startTime", "endTime", "dayOfWeek", "dateOfWeek"],
           where: {
             dateOfWeek: {
               [Op.gte]: dateFormate,
