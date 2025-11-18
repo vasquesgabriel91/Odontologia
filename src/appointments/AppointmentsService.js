@@ -5,6 +5,28 @@ const API_PREFIX = process.env.API_PREFIX;
 const baseUrl = process.env.BASE_URL;
 
 class AppointmentsService {
+  
+  async checkConflict({ doctorId, date, newStartTime, newEndTime, appointmentIdToExclude = null }) {
+    const existingAppointments =
+      await AppointmentsRepository.findAppointmentsByDoctorAndDate({
+        doctorId,
+        date,
+        appointmentIdToExclude,
+      });
+
+    for (const app of existingAppointments) {
+
+      if (newStartTime < app.endTime && newEndTime > app.startTime) {
+        throw new Error(
+          `Horário indisponível (${newStartTime}-${newEndTime}). Já existe uma consulta agendada das ${app.startTime} às ${app.endTime}.`
+        );
+      }
+    }
+  }
+
+  /**
+   * [V50] Lógica de Negócios: Lista vagas, calculando quais estão cheias.
+   */
   async listSchedules() {
     try {
       const appointments = await AppointmentsRepository.getAllAppointments();
@@ -27,6 +49,9 @@ class AppointmentsService {
           appointmentStartTime,
           appointmentEndTime,
         } = app;
+
+        // Evita erro se o agendamento estiver órfão
+        if (!scheduleId) return; 
 
         const hoursToWorkByPatient = convertTimeForNumber(
           appointmentStartTime,

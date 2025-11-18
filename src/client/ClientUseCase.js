@@ -62,5 +62,21 @@ class ClientUseCase {
       throw new Error(error.message);
     }
   }
+
+  async getProfile(clientId) {
+    try {
+      return await ClientService.getProfile(clientId);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async updateProfile(clientId, data) {
+    try {
+      return await ClientService.updateProfile(clientId, data);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
 }
 export default new ClientUseCase();

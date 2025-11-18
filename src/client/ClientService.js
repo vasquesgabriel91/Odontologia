@@ -1,8 +1,9 @@
 import UserRepository from "../user/UserRepository.js";
+import AddressModel from "../address/addressModel.js"; 
 import validatePassword from "../helpers/passwordValidator.js";
 import validateFields from "../helpers/validateField.js";
 import bcrypt from "bcryptjs";
-import e from "express";
+
 const API_PREFIX = process.env.API_PREFIX;
 const baseUrl = process.env.BASE_URL;
 
@@ -87,9 +88,10 @@ class ClientService {
 
     return output;
   }
+
   async listMyAppointmentsClient(clientId) {
     try {
-      const appointments = await UserRepository.getAppointmentsByClientId(
+      const appointments = await UserRepository.getAppointmentsByClientIdWithDoctor(
         clientId
       );
       const output = appointments.map((appointment) => ({
@@ -97,12 +99,13 @@ class ClientService {
         link: {
           create: `${baseUrl}${API_PREFIX}/myAppointment/Cancel/${appointment.id}`,
         },
-      }));
+       }));
       return output;
     } catch (error) {
       throw new Error("Erro ao listar os agendamentos: " + error.message);
     }
   }
+
   async updateAppointmentClient(appointmentId, status) {
     try {
       const appointment = await UserRepository.updateAppointmentStatusById(

@@ -2,6 +2,7 @@ import UserModel from "./UserModel.js";
 import AddressModel from "../address/addressModel.js";
 import AppointmentModel from "../appointments/AppointmentsModel.js";
 import { Op } from "sequelize";
+import ObservationModel from "../observationAppointment/ObservationModel.js";
 
 class UsersRepository {
   async create(userData) {
@@ -10,6 +11,7 @@ class UsersRepository {
     });
     return secretary;
   }
+
   async findById(id) {
     const getUser = await UserModel.findByPk(id, {
       attributes: { exclude: ["password", "createdAt", "updatedAt"] },
@@ -24,18 +26,19 @@ class UsersRepository {
           model: AddressModel,
           as: "addresses",
           attributes: {
-            exclude: ["idUser"],
+            exclude: ["idUser", "createdAt", "updatedAt"],
           },
         },
       ],
-      raw: true,
-      nest: true,
     });
-    return getUser;
+    
+    return getUser ? getUser.toJSON() : null;
   }
+
   async findByUserName(username) {
     return await UserModel.findOne({ where: { username } });
   }
+
   async findByUserNameOrEmail(usernameOrEmail) {
     const user = await UserModel.findOne({
       where: {
@@ -44,6 +47,7 @@ class UsersRepository {
     });
     return user;
   }
+
   async findByTelephone(telephone) {
     return await UserModel.findOne({ where: { telephone } });
   }
@@ -70,12 +74,37 @@ class UsersRepository {
     await UserModel.update(userData, { where: { id } });
     return await UserModel.findByPk(id);
   }
+
   async getAppointmentsByClientId(clientId) {
     const appointments = await AppointmentModel.findAll({
       where: { patientId: clientId },
     });
     return appointments;
   }
+
+  async getAppointmentsByClientIdWithDoctor(clientId) {
+    const appointments = await AppointmentModel.findAll({
+      where: { patientId: clientId },
+      include: [
+        {
+          model: UserModel,
+          as: "doctor",
+          attributes: ["id", "username"],
+        },
+        {
+          model: ObservationModel,
+          as: "observations",
+          attributes: ["diagnostic", "procedures", "recommendations", "exams"],
+        },
+      ],
+      order: [
+        ["date", "ASC"],
+        ["startTime", "ASC"],
+      ],
+    });
+    return appointments.map((app) => app.toJSON());
+  }
+
   async updateAppointmentStatusById(appointmentId, status) {
     const appointment = await AppointmentModel.findByPk(appointmentId);
     if (!appointment) {
@@ -116,4 +145,5 @@ class UsersRepository {
     }
   }
 }
+
 export default new UsersRepository();
