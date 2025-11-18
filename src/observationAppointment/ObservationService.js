@@ -1,7 +1,4 @@
-// src/observationAppointment/ObservationService.js (Corrigido)
-
 import ObservationRepository from "./ObservationRepository.js";
-// [CORREÇÃO] Importamos o UserRepository para poder atualizar o agendamento
 import UserRepository from "../user/UserRepository.js"; 
 
 class ObservationService {

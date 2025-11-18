@@ -24,9 +24,6 @@ class AppointmentsService {
     }
   }
 
-  /**
-   * [V50] Lógica de Negócios: Lista vagas, calculando quais estão cheias.
-   */
   async listSchedules() {
     try {
       const appointments = await AppointmentsRepository.getAllAppointments();
@@ -50,7 +47,6 @@ class AppointmentsService {
           appointmentEndTime,
         } = app;
 
-        // Evita erro se o agendamento estiver órfão
         if (!scheduleId) return; 
 
         const hoursToWorkByPatient = convertTimeForNumber(
