@@ -43,7 +43,7 @@ class AppointmentsRepository {
         {
           model: SchedulesModel,
           as: "schedule",
-          attributes: ["id", "startTime", "endTime"],
+          attributes: ["id", "doctorId", "startTime", "endTime"],
         },
       ],
     });
@@ -51,6 +51,9 @@ class AppointmentsRepository {
   }
   async getSchedulesAvailable(schedulesComplete = []) {
     const schedules = await SchedulesModel.findAll({
+      attributes: {
+        exclude: ["createdAt", "updatedAt"],
+      },
       include: [
         {
           model: AppointmentModel,
@@ -63,6 +66,13 @@ class AppointmentsRepository {
             },
           },
         },
+        {
+          model: User,
+          as: "doctor",
+          attributes: {
+                exclude: ["id","password", "email", "telephone", "role","createdAt","updatedAt"],
+          },
+        }
       ],
       where: {
         id: { [Op.notIn]: schedulesComplete },
@@ -83,7 +93,6 @@ class AppointmentsRepository {
   }
 
   async getAllAppointmentsDetailed() {
-    console.log( );
     const appointments = await AppointmentModel.findAll({
       attributes: {
           exclude: ["doctorId","patientId","scheduleId","date","startTime", "endTime","createdAt","updatedAt"],
@@ -106,7 +115,7 @@ class AppointmentsRepository {
               model: User,
               as: "doctor", 
               attributes: {
-                exclude: ["id","password", "email", "telephone", "role","cro ","createdAt","updatedAt"],
+                exclude: ["id","password", "email", "telephone", "role","createdAt","updatedAt"],
               },
             },
           ],
