@@ -5,8 +5,13 @@ const API_PREFIX = process.env.API_PREFIX;
 const baseUrl = process.env.BASE_URL;
 
 class AppointmentsService {
-  
-  async checkConflict({ doctorId, date, newStartTime, newEndTime, appointmentIdToExclude = null }) {
+  async checkConflict({
+    doctorId,
+    date,
+    newStartTime,
+    newEndTime,
+    appointmentIdToExclude = null,
+  }) {
     const existingAppointments =
       await AppointmentsRepository.findAppointmentsByDoctorAndDate({
         doctorId,
@@ -15,13 +20,20 @@ class AppointmentsService {
       });
 
     for (const app of existingAppointments) {
-
       if (newStartTime < app.endTime && newEndTime > app.startTime) {
         throw new Error(
           `Horário indisponível (${newStartTime}-${newEndTime}). Já existe uma consulta agendada das ${app.startTime} às ${app.endTime}.`
         );
       }
     }
+  }
+
+  async convertTime(startTime, endTime) {
+    const hoursToWorkByDoctor = convertTimeForNumber(
+      startTime,
+      endTime
+    );
+    return hoursToWorkByDoctor;
   }
 
   async listSchedules() {
@@ -47,7 +59,7 @@ class AppointmentsService {
           appointmentEndTime,
         } = app;
 
-        if (!scheduleId) return; 
+        if (!scheduleId) return;
 
         const hoursToWorkByPatient = convertTimeForNumber(
           appointmentStartTime,
@@ -106,23 +118,42 @@ class AppointmentsService {
       return getByEmail;
     } catch (error) {
       throw new Error("Erro ao buscar usuário: " + error.message);
-    } 
+    }
+  }
+  async getAvailableSchedule(scheduleId) {
+    const availableSchedule = await AppointmentsRepository.CheckTheAvailableTimes(scheduleId);
+    const endTime = availableSchedule.endTime;
+    const startTime = availableSchedule.startTime;
+
+    const convertedHours = await this.convertTime(startTime, endTime);
+    
+    console.log("ConvertedHours:", convertedHours);
+
+   
   }
   async checkAvailable(scheduleId, scheduleStartTime) {
-    const checkAvailable = await AppointmentsRepository.getAvailableScheduleByIdAndStartTime(
-      scheduleId,
-      scheduleStartTime
-    );
+    const checkAvailable =
+      await AppointmentsRepository.getAvailableScheduleByIdAndStartTime(
+        scheduleId,
+        scheduleStartTime
+      );
 
     if (checkAvailable.length > 0) {
-    throw new Error(`Horário não disponível. Horários indisponíveis: ${JSON.stringify(checkAvailable)}`);
+      throw new Error(
+        `Horário não disponível. Horários indisponíveis: ${JSON.stringify(
+          checkAvailable
+        )}`
+      );
     }
     return checkAvailable;
   }
   async checkIfUserHaveAppointment(id, scheduleId) {
-    const appointment = await AppointmentsRepository.getAvailableScheduleByIdAndStartTime(id, scheduleId);
+    const appointment = await AppointmentsRepository.getAppointmentByPatientId(
+      id,
+      scheduleId
+    );
     console.log("CheckIfUserHaveAppointment:", appointment);
-    return appointment; 
+    return appointment;
   }
 
   async createAppointments(scheduleId, secretaryId, appointmentData) {
@@ -130,9 +161,12 @@ class AppointmentsService {
       const { email, startTime, endTime, status, descricao } = appointmentData;
 
       const getByEmail = await this.getByNameOrEmail(email);
-      const avaibleAppointment
+      const availableSchedule = await this.getAvailableSchedule(scheduleId);
       const checkAvailable = await this.checkAvailable(scheduleId, startTime);
-      const checkUserHaveAppointment = await this.checkIfUserHaveAppointment(getByEmail.id, scheduleId);
+      const checkUserHaveAppointment = await this.checkIfUserHaveAppointment(
+        getByEmail.id,
+        scheduleId
+      );
 
       const patientId = getByEmail.id;
 
@@ -197,12 +231,23 @@ class AppointmentsService {
   async updateAppointment(appointmentId, userData) {
     const { dateOfWeek, dayOfWeek, startTime, endTime, status } = userData;
     try {
-      const getAppointmentById = await AppointmentsRepository.getAppointmentById(appointmentId);
+      const getAppointmentById =
+        await AppointmentsRepository.getAppointmentById(appointmentId);
       const scheduleId = getAppointmentById.scheduleId;
 
-      const updateDateOfWeek = await AppointmentsRepository.updateDateOfWeek(scheduleId, dateOfWeek, dayOfWeek);
+      const updateDateOfWeek = await AppointmentsRepository.updateDateOfWeek(
+        scheduleId,
+        dateOfWeek,
+        dayOfWeek
+      );
 
-      const updateAppointment = await AppointmentsRepository.updateAppointment(appointmentId, dayOfWeek, startTime, endTime, status);
+      const updateAppointment = await AppointmentsRepository.updateAppointment(
+        appointmentId,
+        dayOfWeek,
+        startTime,
+        endTime,
+        status
+      );
       return updateAppointment;
     } catch (error) {
       throw new Error("Erro ao atualizar consulta: " + error.message);

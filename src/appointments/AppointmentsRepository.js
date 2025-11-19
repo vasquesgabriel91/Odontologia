@@ -44,7 +44,6 @@ class AppointmentsRepository {
     return schedule;
   }
 
-
   async getAppointmentByPatientId(id, scheduleId) {
     const appointment = await AppointmentModel.findOne({
       where: {
@@ -55,6 +54,15 @@ class AppointmentsRepository {
     return appointment;
   }
 
+async CheckTheAvailableTimes(scheduleId) {
+  const schedule = await SchedulesModel.findOne({
+    where: { id: scheduleId },
+    attributes: ["id", "startTime", "endTime"],
+  }
+  );
+  console.log("AvailableSchedule:", schedule);
+  return schedule;
+}
   async getAllSchedules() {
     const schedules = await SchedulesModel.findAll();
     return schedules;
