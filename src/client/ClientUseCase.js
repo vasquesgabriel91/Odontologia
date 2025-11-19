@@ -44,7 +44,6 @@ class ClientUseCase {
     const zipCode = addresses?.zipCode;
 
     try {
-      console.log(userData, idParam);
       await ClientService.validateUserNameUnique(username);
       await ClientService.validateEmailUnique(email);
       await ClientService.validateTelephoneUnique(telephone);

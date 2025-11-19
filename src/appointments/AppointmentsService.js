@@ -97,11 +97,42 @@ class AppointmentsService {
       throw new Error("Erro ao listar os usuários: " + error.message);
     }
   }
+  async getByNameOrEmail(email) {
+    try {
+      const getByEmail = await UserRepository.findByUserNameOrEmail(email);
+      if (!getByEmail) {
+        throw new Error("Usuário não encontrado.");
+      }
+      return getByEmail;
+    } catch (error) {
+      throw new Error("Erro ao buscar usuário: " + error.message);
+    } 
+  }
+  async checkAvailable(scheduleId, scheduleStartTime) {
+    const checkAvailable = await AppointmentsRepository.getAvailableScheduleByIdAndStartTime(
+      scheduleId,
+      scheduleStartTime
+    );
+
+    if (checkAvailable.length > 0) {
+    throw new Error(`Horário não disponível. Horários indisponíveis: ${JSON.stringify(checkAvailable)}`);
+    }
+    return checkAvailable;
+  }
+  async checkIfUserHaveAppointment(id, scheduleId) {
+    const appointment = await AppointmentsRepository.getAvailableScheduleByIdAndStartTime(id, scheduleId);
+    console.log("CheckIfUserHaveAppointment:", appointment);
+    return appointment; 
+  }
+
   async createAppointments(scheduleId, secretaryId, appointmentData) {
     try {
       const { email, startTime, endTime, status, descricao } = appointmentData;
 
-      const getByEmail = await UserRepository.findByUserNameOrEmail(email);
+      const getByEmail = await this.getByNameOrEmail(email);
+      const avaibleAppointment
+      const checkAvailable = await this.checkAvailable(scheduleId, startTime);
+      const checkUserHaveAppointment = await this.checkIfUserHaveAppointment(getByEmail.id, scheduleId);
 
       const patientId = getByEmail.id;
 

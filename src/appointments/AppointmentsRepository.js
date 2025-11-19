@@ -32,6 +32,29 @@ class AppointmentsRepository {
       throw new Error("Erro ao criar agendamento: " + error.message);
     }
   }
+
+  async getAvailableScheduleByIdAndStartTime(scheduleId, startTime) {
+    const schedule = await AppointmentModel.findAll({
+      attributes: ["startTime"],
+      where: {
+        scheduleId,
+        startTime,
+      },
+    });
+    return schedule;
+  }
+
+
+  async getAppointmentByPatientId(id, scheduleId) {
+    const appointment = await AppointmentModel.findOne({
+      where: {
+        patientId: id,
+        scheduleId: scheduleId,
+      },
+    });
+    return appointment;
+  }
+
   async getAllSchedules() {
     const schedules = await SchedulesModel.findAll();
     return schedules;
