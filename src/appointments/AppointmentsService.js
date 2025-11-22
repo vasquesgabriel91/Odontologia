@@ -29,11 +29,8 @@ class AppointmentsService {
   }
 
   async convertTime(startTime, endTime) {
-    const hoursToWorkByDoctor = convertTimeForNumber(
-      startTime,
-      endTime
-    );
-    return hoursToWorkByDoctor;
+    const hoursToWork = convertTimeForNumber(startTime, endTime);
+    return hoursToWork;
   }
 
   async listSchedules() {
@@ -120,18 +117,32 @@ class AppointmentsService {
       throw new Error("Erro ao buscar usuário: " + error.message);
     }
   }
-  async getAvailableSchedule(scheduleId) {
-    const availableSchedule = await AppointmentsRepository.CheckTheAvailableTimes(scheduleId);
+  async getAppointmentByPatientIdAndScheduleId(patientId, scheduleId) {
+    try {
+      const appointment =
+        await AppointmentsRepository.getAppointmentByPatientIdAndScheduleId(
+          patientId,
+          scheduleId
+        );
+        if (appointment > 0 ) {
+          throw new Error("Usuário já possui agendamento para esta agenda.");
+        }
+      return appointment;
+    } catch (error) {
+      throw new Error("Erro ao buscar consulta: " + error.message);
+    }
+  }
+  async getHourDoctorSchedule(scheduleId) {
+    const availableSchedule = 
+      await AppointmentsRepository.CheckTheAvailableTimes(scheduleId);
     const endTime = availableSchedule.endTime;
     const startTime = availableSchedule.startTime;
 
     const convertedHours = await this.convertTime(startTime, endTime);
-    
-    console.log("ConvertedHours:", convertedHours);
 
-   
+    return convertedHours;
   }
-  async checkAvailable(scheduleId, scheduleStartTime) {
+  async checkAvailableStartTime(scheduleId, scheduleStartTime) {
     const checkAvailable =
       await AppointmentsRepository.getAvailableScheduleByIdAndStartTime(
         scheduleId,
@@ -139,21 +150,36 @@ class AppointmentsService {
       );
 
     if (checkAvailable.length > 0) {
+      
       throw new Error(
-        `Horário não disponível. Horários indisponíveis: ${JSON.stringify(
+        `Horários indisponíveis: ${JSON.stringify(
           checkAvailable
         )}`
       );
     }
     return checkAvailable;
   }
-  async checkIfUserHaveAppointment(id, scheduleId) {
-    const appointment = await AppointmentsRepository.getAppointmentByPatientId(
-      id,
-      scheduleId
-    );
-    console.log("CheckIfUserHaveAppointment:", appointment);
-    return appointment;
+  async availableAppointmentSlots(scheduleId, convertedHourDoctorSchedule) {
+    let totalHours = 0;
+    try {
+      const appointment =
+        await AppointmentsRepository.getAppointmentByPatientId(scheduleId);
+      appointment.forEach((app) => {
+        const appointmentHours = convertTimeForNumber(
+          app.startTime,
+          app.endTime
+        );
+        totalHours += appointmentHours;
+
+        if (totalHours >= convertedHourDoctorSchedule) {
+          throw new Error("Não há horários disponíveis para agendamento.");
+        }
+      });
+    } catch (error) {
+      throw new Error(
+        error.message
+      );
+    }
   }
 
   async createAppointments(scheduleId, secretaryId, appointmentData) {
@@ -161,11 +187,17 @@ class AppointmentsService {
       const { email, startTime, endTime, status, descricao } = appointmentData;
 
       const getByEmail = await this.getByNameOrEmail(email);
-      const availableSchedule = await this.getAvailableSchedule(scheduleId);
-      const checkAvailable = await this.checkAvailable(scheduleId, startTime);
-      const checkUserHaveAppointment = await this.checkIfUserHaveAppointment(
-        getByEmail.id,
+
+      const ExistAppointmentByUserId = await this.getAppointmentByPatientIdAndScheduleId(getByEmail.id, scheduleId);
+
+      const convertedHourDoctorSchedule = await this.getHourDoctorSchedule(
         scheduleId
+      );
+      const checkAvailable = await this.checkAvailableStartTime(scheduleId, startTime);
+
+      const checkUserHaveAppointment = await this.availableAppointmentSlots(
+        scheduleId,
+        convertedHourDoctorSchedule
       );
 
       const patientId = getByEmail.id;

@@ -44,10 +44,9 @@ class AppointmentsRepository {
     return schedule;
   }
 
-  async getAppointmentByPatientId(id, scheduleId) {
-    const appointment = await AppointmentModel.findOne({
+  async getAppointmentByPatientId(scheduleId) {
+    const appointment = await AppointmentModel.findAll({
       where: {
-        patientId: id,
         scheduleId: scheduleId,
       },
     });
@@ -60,7 +59,6 @@ async CheckTheAvailableTimes(scheduleId) {
     attributes: ["id", "startTime", "endTime"],
   }
   );
-  console.log("AvailableSchedule:", schedule);
   return schedule;
 }
   async getAllSchedules() {
@@ -174,6 +172,16 @@ async CheckTheAvailableTimes(scheduleId) {
     const getAppointmentById = await this.getAppointmentById(appointmentId);
 
     return getAppointmentById;
+  }
+
+  async getAppointmentByPatientIdAndScheduleId(patientId, scheduleId) {
+    const appointment = await AppointmentModel.findOne({
+      where: {
+        patientId: patientId,
+        scheduleId: scheduleId,
+      },
+    });
+    return appointment;
   }
 }
 export default new AppointmentsRepository();
