@@ -32,6 +32,28 @@ class AppointmentsService {
     const hoursToWork = convertTimeForNumber(startTime, endTime);
     return hoursToWork;
   }
+  async appointmentDuration(appointments) {
+    const durationTimes = appointments.map((app) => {
+      const duration = convertTimeForNumber(app.startTime, app.endTime);
+      return {
+        id: app.id,
+        startTime: app.startTime,
+        endTime: app.endTime,
+        duration,
+      };
+    });
+    return durationTimes;
+  }
+  async getMiddleHoursNumber(startTime, endTime) {
+    const start = parseInt(startTime.split(":")[0]);
+    const end = parseInt(endTime.split(":")[0]);
+
+    const result = [];
+    for (let h = start + 1; h < end; h++) {
+      result.push(h);
+    }
+    return result;
+  }
 
   async listSchedules() {
     try {
@@ -124,16 +146,16 @@ class AppointmentsService {
           patientId,
           scheduleId
         );
-        if (appointment > 0 ) {
-          throw new Error("Usuário já possui agendamento para esta agenda.");
-        }
+      if (appointment > 0) {
+        throw new Error("Usuário já possui agendamento para esta agenda.");
+      }
       return appointment;
     } catch (error) {
       throw new Error("Erro ao buscar consulta: " + error.message);
     }
   }
   async getHourDoctorSchedule(scheduleId) {
-    const availableSchedule = 
+    const availableSchedule =
       await AppointmentsRepository.CheckTheAvailableTimes(scheduleId);
     const endTime = availableSchedule.endTime;
     const startTime = availableSchedule.startTime;
@@ -142,28 +164,48 @@ class AppointmentsService {
 
     return convertedHours;
   }
-  async checkAvailableStartTime(scheduleId, scheduleStartTime) {
+  async checkAvailableStartTime(
+    scheduleId,
+    appointmentStartTime,
+    appointmentEndTime
+  ) {
     const checkAvailable =
       await AppointmentsRepository.getAvailableScheduleByIdAndStartTime(
         scheduleId,
-        scheduleStartTime
+        appointmentStartTime
       );
+    const durationTimeAppointments = await this.appointmentDuration(
+      checkAvailable
+    );
+    const overlappingAppointments = durationTimeAppointments.filter(
+      (app) => app.duration > 1
+    );
+  const allMiddleHours = [];
+
+    for (const app of overlappingAppointments) {
+      const appointmentId = await AppointmentsRepository.getAppointmentById(app.id);
+      const startTime = appointmentId.startTime;
+      const endTime = appointmentId.endTime;
+         const middleHours = await this.getMiddleHoursNumber(startTime, endTime);
+
+    allMiddleHours.push(...middleHours);
+    }
+
+    console.log("All Middle Hours:", allMiddleHours);
 
     if (checkAvailable.length > 0) {
-      
       throw new Error(
-        `Horários indisponíveis: ${JSON.stringify(
-          checkAvailable
-        )}`
+        `Horários indisponíveis: ${JSON.stringify(checkAvailable)}`
       );
     }
     return checkAvailable;
   }
+
   async availableAppointmentSlots(scheduleId, convertedHourDoctorSchedule) {
     let totalHours = 0;
     try {
       const appointment =
-        await AppointmentsRepository.getAppointmentByPatientId(scheduleId);
+        await AppointmentsRepository.getAppointmentByScheduleId(scheduleId);
       appointment.forEach((app) => {
         const appointmentHours = convertTimeForNumber(
           app.startTime,
@@ -176,9 +218,7 @@ class AppointmentsService {
         }
       });
     } catch (error) {
-      throw new Error(
-        error.message
-      );
+      throw new Error(error.message);
     }
   }
 
@@ -188,12 +228,20 @@ class AppointmentsService {
 
       const getByEmail = await this.getByNameOrEmail(email);
 
-      const ExistAppointmentByUserId = await this.getAppointmentByPatientIdAndScheduleId(getByEmail.id, scheduleId);
+      const ExistAppointmentByUserId =
+        await this.getAppointmentByPatientIdAndScheduleId(
+          getByEmail.id,
+          scheduleId
+        );
 
       const convertedHourDoctorSchedule = await this.getHourDoctorSchedule(
         scheduleId
       );
-      const checkAvailable = await this.checkAvailableStartTime(scheduleId, startTime);
+      const checkAvailable = await this.checkAvailableStartTime(
+        scheduleId,
+        startTime,
+        endTime
+      );
 
       const checkUserHaveAppointment = await this.availableAppointmentSlots(
         scheduleId,

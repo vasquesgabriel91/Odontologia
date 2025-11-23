@@ -35,7 +35,8 @@ class AppointmentsRepository {
 
   async getAvailableScheduleByIdAndStartTime(scheduleId, startTime) {
     const schedule = await AppointmentModel.findAll({
-      attributes: ["startTime"],
+      raw: true,
+      attributes: ["id","startTime","endTime"],
       where: {
         scheduleId,
         startTime,
@@ -44,7 +45,7 @@ class AppointmentsRepository {
     return schedule;
   }
 
-  async getAppointmentByPatientId(scheduleId) {
+  async getAppointmentByScheduleId(scheduleId) {
     const appointment = await AppointmentModel.findAll({
       where: {
         scheduleId: scheduleId,
@@ -117,7 +118,9 @@ async CheckTheAvailableTimes(scheduleId) {
   }
 
   async getAppointmentById(id) {
-    const appointment = await AppointmentModel.findByPk(id);
+    const appointment = await AppointmentModel.findByPk(id,{
+      raw: true,
+    });
     return appointment;
   }
 

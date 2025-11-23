@@ -51,7 +51,6 @@ class ClientUseCase {
       if (email) await ClientService.validateForEmail(email);
       if (zipCode) await ClientService.validateZipCode(zipCode);
 
-      console.log(idParam, userData);
       const updatedUser = await UserRepository.updateUserAndAddresses(
         idParam,
         userData
