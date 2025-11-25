@@ -33,17 +33,21 @@ class AppointmentsRepository {
     }
   }
 
-  async getAvailableScheduleByIdAndStartTime(scheduleId, startTime) {
-    const schedule = await AppointmentModel.findAll({
-      raw: true,
-      attributes: ["id","startTime","endTime"],
-      where: {
-        scheduleId,
-        startTime,
-      },
-    });
-    return schedule;
-  }
+async getConflictingAppointments(scheduleId, appointmentStartTime, appointmentEndTime) {
+  const conflictingAppointments = await AppointmentModel.findAll({
+    raw: true,
+    attributes: ["id", "startTime", "endTime"],
+    where: {
+      scheduleId,
+      [Op.and]: [
+        { startTime: { [Op.lt]: appointmentEndTime } }, 
+        { endTime: { [Op.gt]: appointmentStartTime } }, 
+      ],
+    },
+  });
+
+  return conflictingAppointments;
+}
 
   async getAppointmentByScheduleId(scheduleId) {
     const appointment = await AppointmentModel.findAll({

@@ -50,7 +50,9 @@ class AppointmentsService {
 
     const result = [];
     for (let h = start + 1; h < end; h++) {
-      result.push(h);
+      const hourStr = String(h).padStart(2, "0") + ":00:00";
+
+      result.push(hourStr);
     }
     return result;
   }
@@ -170,28 +172,29 @@ class AppointmentsService {
     appointmentEndTime
   ) {
     const checkAvailable =
-      await AppointmentsRepository.getAvailableScheduleByIdAndStartTime(
+      await AppointmentsRepository.getConflictingAppointments(
         scheduleId,
-        appointmentStartTime
+        appointmentStartTime,
+        appointmentEndTime
       );
-    const durationTimeAppointments = await this.appointmentDuration(
-      checkAvailable
-    );
-    const overlappingAppointments = durationTimeAppointments.filter(
-      (app) => app.duration > 1
-    );
-  const allMiddleHours = [];
+  //   const durationTimeAppointments = await this.appointmentDuration(
+  //     checkAvailable
+  //   );
+  //   const overlappingAppointments = durationTimeAppointments.filter(
+  //     (app) => app.duration > 1
+  //   );
+  // const allMiddleHours = [];
 
-    for (const app of overlappingAppointments) {
-      const appointmentId = await AppointmentsRepository.getAppointmentById(app.id);
-      const startTime = appointmentId.startTime;
-      const endTime = appointmentId.endTime;
-         const middleHours = await this.getMiddleHoursNumber(startTime, endTime);
+  //   for (const app of overlappingAppointments) {
+  //     const appointmentId = await AppointmentsRepository.getAppointmentById(app.id);
+  //     const startTime = appointmentId.startTime;
+  //     const endTime = appointmentId.endTime;
+  //        const middleHours = await this.getMiddleHoursNumber(startTime, endTime);
 
-    allMiddleHours.push(...middleHours);
-    }
+  //   allMiddleHours.push(...middleHours);
+  //   }
 
-    console.log("All Middle Hours:", allMiddleHours);
+  //   console.log("All Middle Hours:", allMiddleHours);
 
     if (checkAvailable.length > 0) {
       throw new Error(
@@ -228,8 +231,7 @@ class AppointmentsService {
 
       const getByEmail = await this.getByNameOrEmail(email);
 
-      const ExistAppointmentByUserId =
-        await this.getAppointmentByPatientIdAndScheduleId(
+      const ExistAppointmentByUserId = await this.getAppointmentByPatientIdAndScheduleId(
           getByEmail.id,
           scheduleId
         );
@@ -237,16 +239,17 @@ class AppointmentsService {
       const convertedHourDoctorSchedule = await this.getHourDoctorSchedule(
         scheduleId
       );
+      // const checkUserHaveAppointment = await this.availableAppointmentSlots(
+      //   scheduleId,
+      //   convertedHourDoctorSchedule
+      // );
+
       const checkAvailable = await this.checkAvailableStartTime(
         scheduleId,
         startTime,
         endTime
       );
 
-      const checkUserHaveAppointment = await this.availableAppointmentSlots(
-        scheduleId,
-        convertedHourDoctorSchedule
-      );
 
       const patientId = getByEmail.id;
 
