@@ -177,24 +177,12 @@ class AppointmentsService {
         appointmentStartTime,
         appointmentEndTime
       );
-  //   const durationTimeAppointments = await this.appointmentDuration(
-  //     checkAvailable
-  //   );
-  //   const overlappingAppointments = durationTimeAppointments.filter(
-  //     (app) => app.duration > 1
-  //   );
-  // const allMiddleHours = [];
 
-  //   for (const app of overlappingAppointments) {
-  //     const appointmentId = await AppointmentsRepository.getAppointmentById(app.id);
-  //     const startTime = appointmentId.startTime;
-  //     const endTime = appointmentId.endTime;
-  //        const middleHours = await this.getMiddleHoursNumber(startTime, endTime);
-
-  //   allMiddleHours.push(...middleHours);
-  //   }
-
-  //   console.log("All Middle Hours:", allMiddleHours);
+      if (appointmentStartTime >= appointmentEndTime) {
+        throw new Error(
+          "Horário de início deve ser menor que o horário de término."
+        );
+      }
 
     if (checkAvailable.length > 0) {
       throw new Error(
@@ -239,10 +227,10 @@ class AppointmentsService {
       const convertedHourDoctorSchedule = await this.getHourDoctorSchedule(
         scheduleId
       );
-      // const checkUserHaveAppointment = await this.availableAppointmentSlots(
-      //   scheduleId,
-      //   convertedHourDoctorSchedule
-      // );
+      const checkUserHaveAppointment = await this.availableAppointmentSlots(
+        scheduleId,
+        convertedHourDoctorSchedule
+      );
 
       const checkAvailable = await this.checkAvailableStartTime(
         scheduleId,
