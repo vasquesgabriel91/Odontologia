@@ -148,10 +148,8 @@ class AppointmentsService {
           patientId,
           scheduleId
         );
-      if (appointment > 0) {
-        throw new Error("Usuário já possui agendamento para esta agenda.");
-      }
-      return appointment;
+      if (appointment) throw new Error("Usuário já possui agendamento para esta consulta.");
+      
     } catch (error) {
       throw new Error("Erro ao buscar consulta: " + error.message);
     }
