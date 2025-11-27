@@ -1,6 +1,8 @@
 import UserRepository from "../user/UserRepository.js";
+import AppointmentsRepository from "../appointments/AppointmentsRepository.js";
 import validatePassword from "../helpers/passwordValidator.js";
 import bcrypt from "bcryptjs";
+
 const API_PREFIX = process.env.API_PREFIX;
 const baseUrl = process.env.BASE_URL;
 
@@ -37,6 +39,7 @@ class AdminService {
 
     return output;
   }
+
   async deleteDoctor(idParam) {
     try {
       const deleteUser = await UserRepository.delete(idParam);
@@ -45,6 +48,7 @@ class AdminService {
       throw new Error("Erro ao deletar o doutor: " + error.message);
     }
   }
+
   async listUsers() {
     try {
       const users = await UserRepository.findAll();
@@ -62,6 +66,7 @@ class AdminService {
       throw new Error("Erro ao listar os usuários: " + error.message);
     }
   }
+
   async updateUser(idParam, userData) {
     try {
       const user = await UserRepository.findById(idParam);
@@ -71,6 +76,25 @@ class AdminService {
       return updatedUser;
     } catch (error) {
       throw new Error("Erro ao atualizar o usuário: " + error.message);
+    }
+  }
+
+  async getDashboardStats() {
+    try {
+      const appointments = await AppointmentsRepository.getAllAppointmentsDetailed();
+      
+      const stats = appointments.map(app => {
+        const dateStr = app.date || app.schedule?.dateOfWeek || app.schedule?.dayOfWeek;
+        return {
+          id: app.id,
+          date: dateStr,
+          status: app.status
+        };
+      });
+
+      return stats;
+    } catch (error) {
+      throw new Error("Erro ao buscar estatísticas: " + error.message);
     }
   }
 }

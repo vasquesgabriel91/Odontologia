@@ -2,6 +2,7 @@ import AppointmentModel from "./AppointmentsModel.js";
 import SchedulesModel from "../schedules/SchedulesModel.js";
 import User from "../user/UserModel.js";
 import { Op, fn, col, where, literal } from "sequelize";
+
 class AppointmentsRepository {
   async createAppointments(
     startTime,
@@ -33,43 +34,46 @@ class AppointmentsRepository {
     }
   }
 
-async getConflictingAppointments(scheduleId, appointmentStartTime, appointmentEndTime) {
-  const conflictingAppointments = await AppointmentModel.findAll({
-    raw: true,
-    attributes: ["id", "startTime", "endTime"],
-    where: {
-      scheduleId,
-      [Op.and]: [
-        { startTime: { [Op.lt]: appointmentEndTime } }, 
-        { endTime: { [Op.gt]: appointmentStartTime } }, 
-      ],
-    },
-  });
+  async getConflictingAppointments(scheduleId, appointmentStartTime, appointmentEndTime) {
+    const conflictingAppointments = await AppointmentModel.findAll({
+      raw: true,
+      attributes: ["id", "startTime", "endTime"],
+      where: {
+        scheduleId,
+        [Op.and]: [
+          { startTime: { [Op.lt]: appointmentEndTime } }, 
+          { endTime: { [Op.gt]: appointmentStartTime } }, 
+          { status: { [Op.not]: "cancelado" } }
+        ],
+      },
+    });
 
-  return conflictingAppointments;
-}
+    return conflictingAppointments;
+  }
 
   async getAppointmentByScheduleId(scheduleId) {
     const appointment = await AppointmentModel.findAll({
       where: {
         scheduleId: scheduleId,
+        status: { [Op.not]: "cancelado" }
       },
     });
     return appointment;
   }
 
-async CheckTheAvailableTimes(scheduleId) {
-  const schedule = await SchedulesModel.findOne({
-    where: { id: scheduleId },
-    attributes: ["id", "startTime", "endTime"],
+  async CheckTheAvailableTimes(scheduleId) {
+    const schedule = await SchedulesModel.findOne({
+      where: { id: scheduleId },
+      attributes: ["id", "startTime", "endTime"],
+    });
+    return schedule;
   }
-  );
-  return schedule;
-}
+
   async getAllSchedules() {
     const schedules = await SchedulesModel.findAll();
     return schedules;
   }
+
   async getAllAppointments() {
     const appointments = await AppointmentModel.findAll({
       attributes: ["id", "startTime", "endTime"],
@@ -83,6 +87,7 @@ async CheckTheAvailableTimes(scheduleId) {
     });
     return appointments.map((app) => app.toJSON());
   }
+
   async getSchedulesAvailable(schedulesComplete = []) {
     const schedules = await SchedulesModel.findAll({
       attributes: {
@@ -93,10 +98,10 @@ async CheckTheAvailableTimes(scheduleId) {
           model: AppointmentModel,
           as: "appointments",
           required: false,
-          attributes: ["startTime"],
+          attributes: ["id", "startTime", "endTime", "status"], 
           where: {
             status: {
-              [Op.in]: ["agendado", "concluído", "cancelado"],
+              [Op.not]: "cancelado", 
             },
           },
         },
@@ -104,9 +109,9 @@ async CheckTheAvailableTimes(scheduleId) {
           model: User,
           as: "doctor",
           attributes: {
-                exclude: ["id","password", "email", "telephone", "role","createdAt","updatedAt"],
+            exclude: ["id", "password", "email", "telephone", "role", "createdAt", "updatedAt"],
           },
-        }
+        },
       ],
       where: {
         id: { [Op.notIn]: schedulesComplete },
@@ -122,23 +127,25 @@ async CheckTheAvailableTimes(scheduleId) {
   }
 
   async getAppointmentById(id) {
-    const appointment = await AppointmentModel.findByPk(id,{
+    const appointment = await AppointmentModel.findByPk(id, {
       raw: true,
     });
     return appointment;
   }
 
+  // --- CORREÇÃO AQUI ---
   async getAllAppointmentsDetailed() {
     const appointments = await AppointmentModel.findAll({
       attributes: {
-          exclude: ["doctorId","patientId","scheduleId","date","startTime", "endTime","createdAt","updatedAt"],
-        },
+        // Removi 'date', 'startTime' e 'endTime' da exclusão
+        exclude: ["doctorId", "patientId", "scheduleId", "createdAt", "updatedAt"],
+      },
       include: [
         {
           model: User,
           as: "patient",
           attributes: {
-            exclude: ["password","cro","createdAt","updatedAt"],
+            exclude: ["password", "cro", "createdAt", "updatedAt"],
           },
         },
         {
@@ -149,13 +156,13 @@ async CheckTheAvailableTimes(scheduleId) {
           include: [
             {
               model: User,
-              as: "doctor", 
+              as: "doctor",
               attributes: {
-                exclude: ["id","password", "email", "telephone", "role","createdAt","updatedAt"],
+                exclude: ["id", "password", "email", "telephone", "role", "createdAt", "updatedAt"],
               },
             },
           ],
-        },  
+        },
       ],
     });
 
@@ -186,6 +193,7 @@ async CheckTheAvailableTimes(scheduleId) {
       where: {
         patientId: patientId,
         scheduleId: scheduleId,
+        status: { [Op.not]: "cancelado" }
       },
     });
     return appointment;

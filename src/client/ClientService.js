@@ -8,18 +8,29 @@ const API_PREFIX = process.env.API_PREFIX;
 const baseUrl = process.env.BASE_URL;
 
 class ClientService {
-  async validateUserNameUnique(username) {
+  // --- CORREÇÃO NAS VALIDAÇÕES PARA IGNORAR O PRÓPRIO ID ---
+  async validateUserNameUnique(username, idToExclude = null) {
     const existingUser = await UserRepository.findByUserName(username);
-    if (existingUser) throw new Error("Nome de usuário já está em uso");
+    if (existingUser && existingUser.id !== idToExclude) {
+        throw new Error("Nome de usuário já está em uso");
+    }
   }
-  async validateEmailUnique(email) {
+
+  async validateEmailUnique(email, idToExclude = null) {
     const existingUser = await UserRepository.findByEmail(email);
-    if (existingUser) throw new Error("Este email já está em uso");
+    if (existingUser && existingUser.id !== idToExclude) {
+        throw new Error("Este email já está em uso");
+    }
   }
-  async validateTelephoneUnique(telephone) {
+
+  async validateTelephoneUnique(telephone, idToExclude = null) {
     const existingUser = await UserRepository.findByTelephone(telephone);
-    if (existingUser) throw new Error("Número de celular já está em uso");
+    if (existingUser && existingUser.id !== idToExclude) {
+        throw new Error("Número de celular já está em uso");
+    }
   }
+  // ---------------------------------------------------------
+
   async validateCellphoneUnique(telephone) {
     if (!validateFields.validateCellphone(telephone))
       throw new Error("Telefone inválido");
@@ -43,6 +54,8 @@ class ClientService {
   async createClient(userData) {
     const { username, password, email, telephone, zipCode } = userData;
     const role = "client";
+    
+    // Na criação não passamos ID para excluir
     await this.validateUserNameUnique(username);
     await this.isPasswordStrong(password);
     await this.validateEmailUnique(email);
@@ -133,7 +146,13 @@ class ClientService {
     }
   }
 
+  async getProfile(clientId) {
+      return this.getClientProfile(clientId);
+  }
   
+  async updateProfile(clientId, data) {
+      // Lógica auxiliar se necessário
+  }
 }
 
 export default new ClientService();

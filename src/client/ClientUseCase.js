@@ -1,5 +1,6 @@
 import ClientService from "./ClientService.js";
 import UserRepository from "../user/UserRepository.js";
+
 class ClientUseCase {
   async execute(userData) {
     try {
@@ -39,14 +40,19 @@ class ClientUseCase {
       throw new Error(error.message);
     }
   }
+  
   async updateUser(userData, idParam) {
     const { username, email, telephone, addresses } = userData;
     const zipCode = addresses?.zipCode;
 
     try {
-      await ClientService.validateUserNameUnique(username);
-      await ClientService.validateEmailUnique(email);
-      await ClientService.validateTelephoneUnique(telephone);
+      // --- CORREÇÃO: Passamos idParam como segundo argumento ---
+      // Isso diz ao serviço: "Verifique se o nome existe, mas ignore se o dono for este ID"
+      await ClientService.validateUserNameUnique(username, idParam);
+      await ClientService.validateEmailUnique(email, idParam);
+      await ClientService.validateTelephoneUnique(telephone, idParam);
+      // --------------------------------------------------------
+
       await ClientService.validateCellphoneUnique(telephone);
       if (email) await ClientService.validateForEmail(email);
       if (zipCode) await ClientService.validateZipCode(zipCode);
@@ -71,7 +77,7 @@ class ClientUseCase {
 
   async updateProfile(clientId, data) {
     try {
-      return await ClientService.updateProfile(clientId, data);
+      return await this.updateUser(data, clientId);
     } catch (error) {
       throw new Error(error.message);
     }

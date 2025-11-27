@@ -9,6 +9,15 @@ class AuthUseCase {
             throw new Error("Erro na autenticação: " + error.message);
         }
      }
+
+     // --- NOVOS MÉTODOS ---
+     async executeForgotPassword(email) {
+        return await AuthService.forgotPassword(email);
+     }
+
+     async executeResetPassword(token, newPassword) {
+        return await AuthService.resetPassword(token, newPassword);
+     }
 }
 
 export default new AuthUseCase();

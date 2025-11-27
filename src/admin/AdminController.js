@@ -1,5 +1,5 @@
-import e from "express";
 import AdminUseCase from "./AdminUseCase.js";
+import AdminService from "./AdminService.js";
 
 class AdminController {
   async createAdmin(req, res) {
@@ -46,6 +46,15 @@ class AdminController {
       res
         .status(200)
         .json({ message: "Usuário atualizado com sucesso ", user: updateUser });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+
+  async getDashboardStats(req, res) {
+    try {
+      const stats = await AdminService.getDashboardStats();
+      res.status(200).json(stats);
     } catch (error) {
       res.status(400).json({ error: error.message });
     }

@@ -13,6 +13,7 @@ class ClientController {
       res.status(400).json({ error: error.message });
     }
   }
+
   async getMyProfile(req, res) {
     const clientId = req.user.id;
     try {
@@ -25,7 +26,11 @@ class ClientController {
 
   async updateUser(req, res) {
     const userData = req.body;
-    const idParam = req.params.id;
+    
+    // --- CORREÇÃO AQUI ---
+    // Se não vier ID na URL (caso do /client/profile), usa o ID do usuário logado
+    const idParam = req.params.id || req.user.id; 
+    // ---------------------
 
     try {
       const update = await ClientUseCase.updateUser(userData, idParam);
@@ -35,6 +40,7 @@ class ClientController {
       return res.status(400).json({ error: error.message });
     }
   }
+
   async myAppointmentPatient(req, res) {
     const clientId = req.user.id;
     try {
@@ -46,6 +52,7 @@ class ClientController {
       res.status(400).json({ error: error.message });
     }
   }
+
   async myAppointmentPatientCancel(req, res) {
     const appointmentId = req.params.id;
     try {

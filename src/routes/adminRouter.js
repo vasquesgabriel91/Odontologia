@@ -13,4 +13,6 @@ router.post( "/doctor", authMiddleware, checkRoles(["admin"]), validateFields(["
 router.delete( "/user/destroy/:id", authMiddleware, checkRoles(["admin"]), AdminController.deleteUser);
 router.put( "/user/update/:id", authMiddleware, checkRoles(["admin"]), AdminController.updateUser);
 router.get ( "/users/getAll", authMiddleware, checkRoles(["admin"]), AdminController.listUsers);
+router.get("/admin/stats", authMiddleware, checkRoles(["admin"]), AdminController.getDashboardStats);
+
 export default router;

@@ -4,13 +4,14 @@ import cors from "cors";
 import http from "http";
 import sequelize from "./database/DatabaseSingleton.js";
 import appConfig from "./config/app.js";
-import logger from "./shared/logger.js  ";
+import logger from "./shared/logger.js";
 import authRouter from "./routes/authRouter.js";
 import adminRouter from "./routes/adminRouter.js";
 import secretaryRouter from "./routes/secretaryRouter.js";
 import doctorRouter from "./routes/doctorRouter.js";
 import clientRouter from "./routes/clientRouter.js";
 import "./models/addressAssociation.js";
+import path from "path"; // <--- IMPORTAR O PATH
 
 dotenv.config();
 const API_PREFIX = process.env.API_PREFIX;
@@ -20,6 +21,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// --- ADICIONE ESTA LINHA AQUI ---
+// Isso permite que o navegador acesse http://localhost:3000/uploads/nome-do-arquivo.jpg
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads"))); 
+// --------------------------------
 
 app.use(API_PREFIX, authRouter);
 app.use(API_PREFIX, adminRouter);
